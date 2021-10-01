@@ -1,0 +1,9 @@
+﻿name: Build App
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List directories
+        run: ls
+#        uses: actions/checkout@v2
