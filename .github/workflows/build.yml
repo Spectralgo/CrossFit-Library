@@ -10,9 +10,9 @@ jobs:
         run: pwd
       - name: List directories
         run: ls
-      - name: List directories in dotnet Api 
-        run: ls CrossFitLibrary.Api -R
       - name: Running dotnet build
         run: dotnet build
+      - name: List directories in dotnet Api
+        run: ls CrossFitLibrary.Api/ -R
       - name: Checking NPM verion 
         run: npm -v
