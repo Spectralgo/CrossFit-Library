@@ -100,8 +100,7 @@ export default {
       this.trickName = "";
 
       this.reset();
-    },;
-
+    }
   }
 }
 
