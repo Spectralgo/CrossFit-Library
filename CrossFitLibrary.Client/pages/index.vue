@@ -1,50 +1,27 @@
 <template>
   <div>
-    <v-card>
-      <v-file-input
-        accept="video/*"
-        label="Video upload"
-        @change="handleFile"
-      ></v-file-input>
+    <v-card class="pa-8 ">
+      <div v-if="tricks">
+        <div v-for="t in tricks">
+          {{ t.name }}
+          <div>
+            <video :src="`http://localhost:5000/api/video/${t.video}`" controls width="400"></video>
+          </div>
+        </div>
+      </div>
     </v-card>
   </div>
 </template>
 
 <script>
-import {mapActions, mapMutations, mapState} from 'vuex';
-
+import {mapState} from 'vuex';
 export default {
-  data: () => ({trickName: ""}),
+  data: () => ({}),
 
   computed: {
-    ...mapState({
-      message: state => state.message
-
-    }),
-    ...mapState('tricks', {
-      tricks: state => state.tricks
-
-    }),
-
-  },
-  methods: {
-    ...mapMutations(['reset']),
-    ...mapMutations('tricks', {resetTricks: 'reset'}),
-    ...mapActions('tricks', ['createTrick']),
-    async saveTrick() {
-      await this.createTrick({trick: {name: this.trickName}});
-      this.trickName = "";
-    },
-    async handleFile(file){
-      if (!file) return;
-
-      console.log(file)
-    }
+    ...mapState('tricks', ['tricks'],
+    ),
   }
-  // async fetch(){
-  //   await this.$store.dispatch('fetchMessage')
-  // }
-
 }
 
 </script>
