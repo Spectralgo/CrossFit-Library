@@ -7,13 +7,10 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn depressed @click="toggleActivity">
-          Upload
-        </v-btn>
+        <content-creation-dialog/>
 
       </v-app-bar>
     </div>
-    <video-upload/>
     <v-main>
       <Nuxt/>
     </v-main>
@@ -21,11 +18,5 @@
 </template>
 
 <script>
-import {mapMutations} from 'vuex';
-
-export default {
-  methods:
-    mapMutations('video-upload', ['toggleActivity'])
-  ,
-}
+export default {}
 </script>

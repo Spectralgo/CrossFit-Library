@@ -1,7 +1,11 @@
 ﻿using System;
-using CrossFitLibrary.Api.Models;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using CrossFitLibrary.Data;
+using CrossFitLibrary.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -9,37 +13,61 @@ namespace CrossFitLibrary.Api.Controllers
     [Route("api/tricks")]
     public class TricksController : ControllerBase
     {
-        private TrickyStore _store;
+        private readonly AppDbContext _ctx;
 
-        public TricksController(TrickyStore store)
+        public TricksController(AppDbContext ctx)
         {
-            _store = store;
+            _ctx = ctx;
         }
 
-        [HttpGet] 
-        public IActionResult All() => Ok(_store.All);
-        
-        [HttpGet("{id}")] 
-        public IActionResult Get(int id) => Ok(_store.All.FirstOrDefault(x => x.Id.Equals(id)));
+        [HttpGet]
+        public IEnumerable<Trick> All()
+        {
+            return _ctx.Tricks.ToList();
+        }
+
+        [HttpGet("{id}")]
+        public Trick Get(string id)
+        {
+            return _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        [HttpGet("{trickId}/submissions")]
+        public IEnumerable<Submission> GetSub(string trickId)
+        {
+            var result =  _ctx.Submissions.Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            return result;
+        }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Trick trick)
+        public async Task<Trick> Create([FromBody] Trick trick)
         {
-          _store.Add(trick);
-          return Ok();
+            trick.Id = trick.TrickName.Replace(" ","-").ToLowerInvariant();
+            _ctx.Add(trick);
+            await _ctx.SaveChangesAsync();
+            return trick;
         }
 
         [HttpPut]
-        public IActionResult Update([FromBody] Trick trick)
+        public async Task<Trick> Put([FromBody] Trick trick)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(trick.Id))
+            {
+                return null;
+            }
+
+            _ctx.Add(trick);
+            await _ctx.SaveChangesAsync();
+            return trick;
         }
-        
+
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(string id)
         {
-            throw new NotImplementedException();
+            var trick = _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id));
+            trick.Deleted = true;
+            return Ok();
         }
     }
 }

@@ -1,26 +1,26 @@
-﻿const initState = () => ({
+﻿import {UPLOAD_TYPE} from "@/data/enum";
+
+const initState = () => ({
   uploadPromise: null,
   active: false,
-  type: "",
-  step: 1
-
+  component: null
+  // type: "",
 });
 
 export const state = initState;
 
 export const mutations = {
-  toggleActivity(state) {
-    state.active = !state.active
-    if(!state.active){
-      Object.assign(state, initState())
-    }
-  },setType(state, {type}){
-    state.type = type
-    state.step++
+  activate(state, component){
+    state.active = true;
+    state.component = component;
+    console.log(component)
+    // state.type = type
+  },
+  hide(state){
+   state.active = false;
   },
   setTask(state, {uploadPromise}) {
     state.uploadPromise = uploadPromise
-    state.step++
   },
   reset(state) {
     Object.assign(state, initState())
@@ -32,9 +32,10 @@ export const actions = {
     const uploadPromise = this.$axios.$post("/api/video", form);
     commit("setTask", {uploadPromise})
   },
-  async createTrick({commit, dispatch}, {trick}) {
-    await this.$axios.post("/api/tricks", trick);
-    await dispatch("tricks/fetchTricks");
-  },
-
+  async createSubmission({commit, dispatch, state}, {form}) {
+    form.video = await state.uploadPromise
+    console.log(form.video)
+    await dispatch('submissions/createSubmission', {form}, {root:true})
+    commit('reset')
+  }
 }

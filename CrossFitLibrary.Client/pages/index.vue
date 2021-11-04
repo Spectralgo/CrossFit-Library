@@ -3,10 +3,9 @@
     <v-card class="pa-8 ">
       <div v-if="tricks">
         <div v-for="t in tricks">
-          {{ t.name }}
-          <div>
-            <video :src="`http://localhost:5000/api/video/${t.video}`" controls width="400"></video>
-          </div>
+          <v-btn :to="`/tricks/${t.id}`">
+            {{ t.trickName }}
+          </v-btn>
         </div>
       </div>
     </v-card>
@@ -15,12 +14,16 @@
 
 <script>
 import {mapState} from 'vuex';
+
 export default {
   data: () => ({}),
 
   computed: {
-    ...mapState('tricks', ['tricks'],
-    ),
+    ...mapState('tricks', ['tricks']),
+    ...mapState('submissions', ['submissions']),
+  },
+  async fetch() {
+    await this.$store.dispatch("tricks/fetchTricks", null, {root:true})
   }
 }
 
