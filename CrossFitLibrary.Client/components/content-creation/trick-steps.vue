@@ -15,6 +15,24 @@
         <v-stepper-content step="1">
           <div>
             <v-text-field v-model="form.trickName" label="Tricking Name"></v-text-field>
+            <v-text-field v-model="form.description" label="Description"></v-text-field>
+
+            <v-select :items="difficultyItems" label="Difficulty"
+                      @change="selectDifficulty">
+            </v-select>
+
+            <v-select :items="categoryItems" label="Categories"
+                      @change="selectCategories" multiple chips small-chips deletable-chips>
+            </v-select>
+
+            <v-select :items="trickItems" label="Prerequisites"
+                      @change="selectPrerequisites" multiple chips small-chips deletable-chips >
+            </v-select>
+
+            <v-select :items="trickItems" label="Progressions"
+                      @change="selectProgressions" multipe chips small-chips deletable-chips >
+            </v-select>
+
             <v-btn @click="step++">Next</v-btn>
           </div>
         </v-stepper-content>
@@ -30,19 +48,35 @@
 </template>
 
 <script>
-import {mapActions, mapMutations} from 'vuex';
+import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
 const initSate = () => ({
-    form: {
-      trickName: "",
-    },
-    submission: "",
-    step: 1
-  })
+  form: {
+    trickName: "",
+    description: "",
+    difficulty: "",
+    prerequisites: [],
+    progressions: [],
+    categories: [],
+  },
+  submission: "",
+  step: 1,
+})
 
 export default {
   name: "trick-steps",
   data: initSate,
+  computed: {
+    ...mapState('video-upload', ['active']),
+    ...mapGetters('tricks', ['trickItems', 'categoryItems', 'difficultyItems']),
+  },
+  watch: {
+    'active': function (newValue) {
+      if (!newValue) {
+        Object.assign(this.$data, initState())
+      }
+    }
+  },
   methods: {
     ...mapMutations('video-upload', ['reset']),
     ...mapActions('tricks', ['createTrick']),
@@ -52,7 +86,19 @@ export default {
       });
       this.reset();
       Object.assign(this.$data, initSate())
-    }
+    },
+    selectDifficulty(item) {
+      return this.form.difficulty = item;
+    },
+    selectCategories(item) {
+      return this.form.categories = item;
+    },
+    selectPrerequisites(item) {
+      return this.form.prerequisites = item;
+    },
+    selectProgressions(item) {
+      return this.form.progressions = item;
+    },
   }
 }
 

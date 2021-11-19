@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import {mapActions, mapMutations, mapGetters} from 'vuex';
+import {mapActions, mapMutations, mapGetters, mapState} from 'vuex';
 
 const initState = () => ({
   step: 1,
@@ -70,7 +70,17 @@ const initState = () => ({
 export default {
   name: "submission-steps",
   data: initState,
-  computed: mapGetters('tricks', ['trickItems']),
+  computed:{
+    ...mapGetters('tricks', ['trickItems']),
+    ...mapState ('video-upload', ['active']),
+  },
+  watch: {
+    'active': function(newValue) {
+      if(!newValue){
+        Object.assign(this.$data, initState())
+      }
+    }
+  },
   methods: {
     ...mapMutations('tricks', {resetTricks: 'reset'}),
     ...mapMutations('video-upload', ['hide']),
@@ -88,9 +98,7 @@ export default {
     },
     save() {
       this.createSubmission({form: this.form})
-
       this.hide();
-      Object.assign(this.$data, initState())
     }
   }
 }

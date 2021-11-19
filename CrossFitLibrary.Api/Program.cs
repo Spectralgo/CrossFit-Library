@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using CrossFitLibrary.Data;
+using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace CrossFitLibrary.Api
 {
@@ -13,11 +11,61 @@ namespace CrossFitLibrary.Api
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            // Initialize the database by seeding it with some data
+            using (var scope = host.Services.CreateScope())
+            {
+                var ctx = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+
+                if (env.IsDevelopment())
+                {
+                    ctx.Add(new Difficulty { Id = "easy", Name = "Easy", Description = "Super easy to do test" });
+                    ctx.Add(new Difficulty { Id = "hard", Name = "Hard", Description = "Hard Test" });
+                    
+                    ctx.Add(new Category 
+                        { Id = "gym", Name = "Gym", Description = "This Gym Test" });
+                    ctx.Add(new Category
+                        { Id = "weight-lifting", Name = "Weight Lifting", Description = "This is heavy shit test" });
+                    ctx.Add(new Category
+                        { Id = "conditioning", Name = "Conditioning", Description = "You will suffer test" });
+                    
+                    ctx.Add(new Trick
+                    {
+                        Id = "snatch", TrickName = "Snatch",
+                        Description = "Snatch is from the floor to the overhead test", Difficulty = "easy",
+                        TrickCategories = new List<TrickCategory>
+                            { new() { CategoryId = "gym" }, new() { CategoryId = "weight-lifting" } }
+                    });
+                    ctx.Add(new Trick
+                    {
+                        Id = "clean", TrickName = "Clean", Description = "Pull the bar from the floor to your shoulders", Difficulty = "easy",
+                        TrickCategories = new List<TrickCategory>
+                            { new() { CategoryId = "weight-lifting" } }
+                    });
+                    ctx.Add(new Trick
+                    {
+                        Id = "clean-and-jerk", TrickName = "Clean and jerk",
+                        Description = "A clean with a finish overhead", Difficulty = "hard",
+                        TrickCategories = new List<TrickCategory>
+                            { new() { CategoryId = "conditioning" }, new() { CategoryId = "weight-lifting" } },
+                        Prerequisites = new List<TrickRelationship>
+                        {
+                            new TrickRelationship { PrerequisiteId = "clean" }
+                        }
+                    });
+                    ctx.SaveChanges();
+                }
+            }
+
+            host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+        }
     }
 }

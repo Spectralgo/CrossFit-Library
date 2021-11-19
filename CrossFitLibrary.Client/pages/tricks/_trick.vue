@@ -1,7 +1,7 @@
 ﻿<template>
   <div class="d-flex justify-center align-start">
     <div v-if="submissions">
-      <div v-for="x in 20">
+      <div v-for="x in 1">
         <div v-for="s in submissions">
           {{ s.id }} - {{ s.description }} - {{ s.trickId }}
           <div>

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.Form;
+using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -21,35 +22,48 @@ namespace CrossFitLibrary.Api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Trick> All()
+        public IEnumerable<object> All()
         {
-            return _ctx.Tricks.ToList();
+            return _ctx.Tricks.Select(TrickViewModels.Default).ToList();
         }
 
         [HttpGet("{id}")]
-        public Trick Get(string id)
+        public object Get(string id)
         {
-            return _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
+            return _ctx.Tricks
+                .Where(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                .Select(TrickViewModels.Default)
+                .FirstOrDefault();
         }
 
         [HttpGet("{trickId}/submissions")]
         public IEnumerable<Submission> GetSub(string trickId)
         {
-            var result =  _ctx.Submissions.Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            var result = _ctx.Submissions
+                .Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase)).ToList();
             return result;
         }
 
         [HttpPost]
-        public async Task<Trick> Create([FromBody] Trick trick)
+        public async Task<object> Create([FromBody] TrickForm trickForm)
         {
-            trick.Id = trick.TrickName.Replace(" ","-").ToLowerInvariant();
+            var trick = new Trick
+            {
+                Id = trickForm.TrickName.Replace(" ", "-").ToLowerInvariant(),
+                TrickName = trickForm.TrickName,
+                Description = trickForm.Description,
+                Difficulty = trickForm.Difficulty,
+                TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList()
+            };
+
             _ctx.Add(trick);
             await _ctx.SaveChangesAsync();
-            return trick;
+            return TrickViewModels.Default.Compile().Invoke(trick);
         }
 
         [HttpPut]
-        public async Task<Trick> Put([FromBody] Trick trick)
+        public async Task<object> Update([FromBody] Trick trick)
+
         {
             if (string.IsNullOrEmpty(trick.Id))
             {
@@ -58,7 +72,7 @@ namespace CrossFitLibrary.Api.Controllers
 
             _ctx.Add(trick);
             await _ctx.SaveChangesAsync();
-            return trick;
+            return TrickViewModels.Default.Compile().Invoke(trick);
         }
 
 

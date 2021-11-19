@@ -1,20 +1,16 @@
-﻿import {UPLOAD_TYPE} from "@/data/enum";
-
+﻿
 const initState = () => ({
   uploadPromise: null,
   active: false,
   component: null
-  // type: "",
 });
 
 export const state = initState;
 
 export const mutations = {
-  activate(state, component){
+  activate(state, {component}){
     state.active = true;
     state.component = component;
-    console.log(component)
-    // state.type = type
   },
   hide(state){
    state.active = false;
@@ -34,7 +30,6 @@ export const actions = {
   },
   async createSubmission({commit, dispatch, state}, {form}) {
     form.video = await state.uploadPromise
-    console.log(form.video)
     await dispatch('submissions/createSubmission', {form}, {root:true})
     commit('reset')
   }

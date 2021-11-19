@@ -7,7 +7,7 @@
 
         <v-spacer></v-spacer>
 
-        <content-creation-dialog/>
+        <ContentCreationDialog/>
 
       </v-app-bar>
     </div>
@@ -18,5 +18,9 @@
 </template>
 
 <script>
-export default {}
+import ContentCreationDialog from "../components/content-creation/content-creation-dialog";
+
+export default {
+components: {ContentCreationDialog}
+}
 </script>
