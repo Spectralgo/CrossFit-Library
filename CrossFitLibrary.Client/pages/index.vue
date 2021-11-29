@@ -3,8 +3,8 @@
     <v-card class="pa-8 ">
       <div v-if="tricks">
         <div v-for="t in tricks">
-          <v-btn :to="`/tricks/${t.id}`">
-            {{ t.trickName }}
+          <v-btn :to="`/trick/${t.id}`">
+            {{ t.name }}
           </v-btn>
         </div>
       </div>

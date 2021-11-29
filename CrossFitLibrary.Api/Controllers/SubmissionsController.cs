@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +24,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet]
         public IEnumerable<Submission> All()
         {
-            return _ctx.Submissions.ToList();
+            return _ctx.Submissions.Where(x => x.VideoProcessed == true).ToList();
         }
 
         [HttpGet("{id}")]
@@ -32,16 +35,34 @@ namespace CrossFitLibrary.Api.Controllers
 
 
         [HttpPost]
-        public async Task<Submission> Create([FromBody] Submission submission)
+        public async Task<IActionResult> Create(
+            [FromBody] Submission submission,
+            [FromServices] Channel<EditVideoChannelMessage> channel,
+            [FromServices] VideoManager videoManager)
         {
+
+            if (!videoManager.TemporaryVideoExists(submission.VideoFileName))
+            {
+                return BadRequest();
+            }
+            submission.VideoProcessed = false;
             _ctx.Add(submission);
             await _ctx.SaveChangesAsync();
-            return submission;
+
+            //sends a message to background service to edit/convert video using the channel
+            var submissionInfoToProcessTheVideo = new EditVideoChannelMessage
+            {
+                SubmissionId = submission.Id,
+                VideoFileName = submission.VideoFileName,
+            };
+
+            channel.Writer.WriteAsync(submissionInfoToProcessTheVideo);
             
+            return Ok(submission);
         }
 
         [HttpPut]
-        public async Task<Submission> Put([FromBody] Submission submission)
+        public async Task<Submission> Update([FromBody] Submission submission)
         {
             if (submission.Id == 0)
             {

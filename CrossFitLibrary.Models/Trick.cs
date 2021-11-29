@@ -4,7 +4,7 @@ namespace CrossFitLibrary.Models
 {
     public class Trick : BaseModel<string>
     {
-        public string TrickName { get; set; }
+        public string Name { get; set; }
         public string Description { get; set; }
         public string Difficulty { get; set; }
 

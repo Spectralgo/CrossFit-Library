@@ -23,37 +23,53 @@ namespace CrossFitLibrary.Api
                 {
                     ctx.Add(new Difficulty { Id = "easy", Name = "Easy", Description = "Super easy to do test" });
                     ctx.Add(new Difficulty { Id = "hard", Name = "Hard", Description = "Hard Test" });
-                    
-                    ctx.Add(new Category 
+
+                    ctx.Add(new Category
                         { Id = "gym", Name = "Gym", Description = "This Gym Test" });
                     ctx.Add(new Category
                         { Id = "weight-lifting", Name = "Weight Lifting", Description = "This is heavy shit test" });
                     ctx.Add(new Category
                         { Id = "conditioning", Name = "Conditioning", Description = "You will suffer test" });
-                    
+
                     ctx.Add(new Trick
                     {
-                        Id = "snatch", TrickName = "Snatch",
+                        Id = "snatch", Name = "Snatch",
                         Description = "Snatch is from the floor to the overhead test", Difficulty = "easy",
                         TrickCategories = new List<TrickCategory>
                             { new() { CategoryId = "gym" }, new() { CategoryId = "weight-lifting" } }
                     });
                     ctx.Add(new Trick
                     {
-                        Id = "clean", TrickName = "Clean", Description = "Pull the bar from the floor to your shoulders", Difficulty = "easy",
+                        Id = "clean", Name = "Clean", Description = "Pull the bar from the floor to your shoulders",
+                        Difficulty = "easy",
                         TrickCategories = new List<TrickCategory>
                             { new() { CategoryId = "weight-lifting" } }
                     });
                     ctx.Add(new Trick
                     {
-                        Id = "clean-and-jerk", TrickName = "Clean and jerk",
+                        Id = "clean-and-jerk", Name = "Clean and jerk",
                         Description = "A clean with a finish overhead", Difficulty = "hard",
                         TrickCategories = new List<TrickCategory>
                             { new() { CategoryId = "conditioning" }, new() { CategoryId = "weight-lifting" } },
                         Prerequisites = new List<TrickRelationship>
                         {
-                            new TrickRelationship { PrerequisiteId = "clean" }
+                            new() { PrerequisiteId = "clean" }
                         }
+                    });
+
+                    ctx.Add(new Submission
+                    {
+                        TrickId = "snatch",
+                        Description = "I'm just trying my best",
+                        VideoFileName = "cseeded_video.mp4",
+                        VideoProcessed = true
+                    });
+                    ctx.Add(new Submission
+                    {
+                        TrickId = "clean",
+                        Description = "best clean of all time",
+                        VideoFileName = "cseeded_video.mp4",
+                        VideoProcessed = true
                     });
                     ctx.SaveChanges();
                 }

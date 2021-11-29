@@ -32,13 +32,12 @@ namespace CrossFitLibrary.Api.Controllers
             return _ctx.Categories.FirstOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        [HttpGet("{Id}/tricks")]
-        public IEnumerable<Trick> ListCategoryTricks(string Id)
+        [HttpGet("{id}/tricks")]
+        public IEnumerable<Trick> ListCategoryTricks(string id)
         {
             var result = _ctx.TrickCategories
                 .Include(x => x.Trick)
-                
-                .Where(x => x.Id.Equals(Id, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => x.CategoryId.Equals(id, StringComparison.InvariantCultureIgnoreCase))
                 .Select(x => x.Trick).ToList();
             return result;
         }

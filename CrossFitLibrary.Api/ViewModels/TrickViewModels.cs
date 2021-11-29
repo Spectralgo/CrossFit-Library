@@ -11,7 +11,7 @@ namespace CrossFitLibrary.Api.ViewModels
             trick => new
         {
             trick.Id,
-            trick.TrickName,
+            trick.Name,
             trick.Description,
             trick.Difficulty,
             Categories = trick.TrickCategories.Select(x => x.CategoryId),

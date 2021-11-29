@@ -14,7 +14,7 @@
 
         <v-stepper-content step="1">
           <div>
-            <v-text-field v-model="form.trickName" label="Tricking Name"></v-text-field>
+            <v-text-field v-model="form.name" label="Tricking Name"></v-text-field>
             <v-text-field v-model="form.description" label="Description"></v-text-field>
 
             <v-select :items="difficultyItems" label="Difficulty"
@@ -30,7 +30,7 @@
             </v-select>
 
             <v-select :items="trickItems" label="Progressions"
-                      @change="selectProgressions" multipe chips small-chips deletable-chips >
+                      @change="selectProgressions" multiple chips small-chips deletable-chips >
             </v-select>
 
             <v-btn @click="step++">Next</v-btn>
@@ -52,7 +52,7 @@ import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 
 const initSate = () => ({
   form: {
-    trickName: "",
+    name: "",
     description: "",
     difficulty: "",
     prerequisites: [],
@@ -67,15 +67,7 @@ export default {
   name: "trick-steps",
   data: initSate,
   computed: {
-    ...mapState('video-upload', ['active']),
     ...mapGetters('tricks', ['trickItems', 'categoryItems', 'difficultyItems']),
-  },
-  watch: {
-    'active': function (newValue) {
-      if (!newValue) {
-        Object.assign(this.$data, initState())
-      }
-    }
   },
   methods: {
     ...mapMutations('video-upload', ['reset']),

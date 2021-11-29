@@ -1,47 +1,67 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.BackgroundServices;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
+
 
 namespace CrossFitLibrary.Api.Controllers
 {
     [Route("api/video")]
     public class VideoController : ControllerBase
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly VideoManager _videoManager;
 
-        public VideoController(IWebHostEnvironment env)
-        
+        public VideoController(VideoManager videoManager)
         {
-            _env = env;
+            _videoManager = videoManager;
         }
-        
-        
-        [HttpGet("{video}")]
-        public IActionResult getVideo(string video)
+
+
+        [HttpGet("{videoFileName}")]
+        public IActionResult GetVideofile(string videoFileName)
         {
-            var savePath = Path.Combine(_env.WebRootPath, video);
-            var fileStream = new FileStream(savePath, FileMode.Open, FileAccess.Read);
-            return new FileStreamResult(fileStream,"video/*");
+            
+            var video_path_during_dev = _videoManager.DevVideoPath(videoFileName);
+            if (string.IsNullOrEmpty(video_path_during_dev))
+            {
+                return BadRequest();
+            }
+            var fileStream = new FileStream(video_path_during_dev, FileMode.Open, FileAccess.Read);
+            return new FileStreamResult(fileStream, "video/*");
         }
 
         [HttpPost]
-        public async Task<IActionResult> uploadVideo(IFormFile video)
+        public Task<string> UploadVideo(IFormFile video)
+        { 
+            // Returns temporary video file name to the client before conversion.
+            // It helps identify the temp file to delete if the conversion fails or if the user cancels the upload"
+            return _videoManager.SaveTemporaryVideo(video);
+        }
+        
+        [HttpDelete("{videoFileName}")]
+        public IActionResult DeleteTemporaryVideo(string videoFileName)
         {
-            var mime = video.FileName.Split(".").Last();
-            var fileName = string.Concat(Path.GetRandomFileName(), ".", mime);
-            var savePath = Path.Combine(_env.WebRootPath, fileName);
-
-            await using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write))
+            
+            if (!_videoManager.IsTemporaryFile(videoFileName))
             {
-                await video.CopyToAsync(fileStream);
+                return BadRequest();
             }
 
-            return Ok(fileName);
+            
+            
+            if (!_videoManager.TemporaryVideoExists(videoFileName))
+            {
+                return NoContent();
+            }
+            
+            _videoManager.DeleteTemporaryVideo(videoFileName);
+            
+            return Ok();
         }
-
     }
 }

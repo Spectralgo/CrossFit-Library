@@ -2,8 +2,9 @@
   <v-app dark>
     <div>
       <v-app-bar app dense>
-
-        <v-toolbar-title>Crossfit Tricks</v-toolbar-title>
+        <v-toolbar-title>
+<nuxt-link to="/" style="text-decoration: none" class="text-h5 text--primary">Woder</nuxt-link>
+        </v-toolbar-title>
 
         <v-spacer></v-spacer>
 
@@ -12,7 +13,9 @@
       </v-app-bar>
     </div>
     <v-main>
-      <Nuxt/>
+      <v-container>
+        <Nuxt/>
+      </v-container>
     </v-main>
   </v-app>
 </template>

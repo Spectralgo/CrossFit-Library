@@ -49,11 +49,13 @@ namespace CrossFitLibrary.Api.Controllers
         {
             var trick = new Trick
             {
-                Id = trickForm.TrickName.Replace(" ", "-").ToLowerInvariant(),
-                TrickName = trickForm.TrickName,
+                Id = trickForm.Name.Replace(" ", "-").ToLowerInvariant(),
+                Name = trickForm.Name,
                 Description = trickForm.Description,
                 Difficulty = trickForm.Difficulty,
-                TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList()
+                TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList(),
+                Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x }).ToList(),
+                Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
             };
 
             _ctx.Add(trick);

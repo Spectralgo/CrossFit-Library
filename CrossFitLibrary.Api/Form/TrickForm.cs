@@ -5,13 +5,13 @@ namespace CrossFitLibrary.Api.Form
 {
     public class TrickForm
     {
-        public string TrickName { get; set; }
+        public string Name { get; set; }
         public string Id { get; set; }
         public string Description { get; set; }
         public string Difficulty { get; set; }
         public IEnumerable<string> Categories { get; set; }
-        // public IEnumerable<string> prerequisites { get; set; }
-        // public IEnumerable<string> progressions { get; set; }
+        public IEnumerable<string> Prerequisites { get; set; }
+        public IEnumerable<string> Progressions { get; set; }
 
     }
 }
