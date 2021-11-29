@@ -1,11 +1,16 @@
 ﻿<template>
   <v-card>
-    <v-card-title>Category</v-card-title>
+    <v-card-title>Create Category
+      <v-spacer></v-spacer>
+      <v-btn @click="close" icon>
+        <v-icon>mdi-close</v-icon>
+      </v-btn>
+    </v-card-title>
     <v-card-text>
       <v-text-field v-model="form.name" label="Name"></v-text-field>
       <v-text-field v-model="form.description" label="Description"></v-text-field>
-      <v-card-actions>
-        <v-btn @click="save">Save</v-btn>
+      <v-card-actions class="d-flex justify-center">
+        <v-btn  @click="save">Save</v-btn>
       </v-card-actions>
     </v-card-text>
   </v-card>
@@ -14,25 +19,26 @@
 <script>
 
 import {mapActions} from "vuex";
+import {close} from "@/components/content-creation/_shared";
 
-const initSate = () => ({
-  form: {
-    name: "",
-    description: "",
-  },
-})
 
 export default {
 
   name: "category-form",
-  data: initSate,
+  mixins: [close],
+  data: () => ({
+    form: {
+      name: "",
+      description: "",
+    },
+  }),
   methods: {
     ...mapActions('tricks', ['createCategory']),
      save() {
       this.createCategory({
         form: this.form
       });
-      Object.assign(this.$data, initSate())
+      this.close()
     }
   }
 }

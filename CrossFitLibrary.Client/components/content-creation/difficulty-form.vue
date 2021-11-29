@@ -1,6 +1,11 @@
 ﻿<template>
-  <v-card>
-    <v-card-title>Difficulty</v-card-title>
+    <v-card>
+      <v-card-title>Create Difficulty
+        <v-spacer></v-spacer>
+        <v-btn @click="close" icon>
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </v-card-title>
     <v-card-text>
       <v-text-field v-model="form.name" label="Difficulty"></v-text-field>
       <v-text-field v-model="form.description" label="Description"></v-text-field>
@@ -13,24 +18,25 @@
 
 <script>
 import {mapActions, mapMutations} from "vuex";
+import {close} from "@/components/content-creation/_shared";
 
-const initSate = () => ({
+
+export default {
+  name: "difficulty-form",
+  mixins: [close],
+  data: () => ({
   form: {
     name: "",
     description: "",
   },
-})
-
-export default {
-  name: "difficulty-form",
-  data: initSate,
+}),
   methods: {
     ...mapActions('tricks', ['createDifficulty']),
      save() {
        this.createDifficulty({
         form: this.form
       });
-      Object.assign(this.$data, initSate())
+       this.close()
     }
   }
 }
