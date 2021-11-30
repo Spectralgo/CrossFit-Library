@@ -2,9 +2,9 @@
   <ItemContentLayout>
     <template v-slot:content>
       <div v-if="submissions">
-        <div v-for="x in 10">
+        <div v-for="x in 1">
           <v-card v-for="s in submissions" :key="`${x}-${trick.id}-${s.id}`" class="my-2" >
-            <VideoPlayer :key="`v-${x}-${trick.id}-${s.id}`" :videoFileName="s.videoFileName"/>
+            <VideoPlayer :key="`v-${x}-${trick.id}-${s.id}`" :video="s.video"/>
             <v-card-text>
               {{ s.description }}
             </v-card-text>

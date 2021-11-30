@@ -11,32 +11,39 @@ namespace CrossFitLibrary.Api.BackgroundServices
     {
         private const string TempPrefix = "temp_";
         private const string ConvertedPrefix = "c";
+        private const string ThumbnailPrefix = "t";
         private readonly IWebHostEnvironment _env;
+        
 
         public VideoManager(IWebHostEnvironment env)
         {
             _env = env;
         }
 
-        public string WorkingDirectory => _env.WebRootPath;
+        private string WorkingDirectory => _env.WebRootPath;
+        public string GetFFmpegPath => Path.Combine(_env.ContentRootPath, "ffmpeg", "ffmpeg.exe");
+        
 
         public bool IsTemporaryFile(string fileName)
         {
             return fileName.StartsWith(TempPrefix);
         }
 
-        public bool TemporaryVideoExists(string videoFileName)
+        public bool FileExists(string fileName)
         {
-            var videoFilePath = TemporarySavePath(videoFileName);
+            var filePath = TemporarySavePath(fileName);
 
-            return File.Exists(videoFilePath);
+            return File.Exists(filePath);
         }
 
-        public void DeleteTemporaryVideo(string videoFileName)
+        public void DeleteFile(string fileName)
         {
-            var videoFilePath = TemporarySavePath(videoFileName);
+            var filePath = TemporarySavePath(fileName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
 
-            File.Delete(videoFilePath);
         }
 
         public string DevVideoPath(string videoFileName)
@@ -47,6 +54,13 @@ namespace CrossFitLibrary.Api.BackgroundServices
         public string GenerateConvertedVideoFileName()
         {
             return $"{ConvertedPrefix}{DateTime.Now.Ticks}.mp4";
+        }
+        
+        public string GenerateThumbnailFileName(string videoFileName)
+        {
+            videoFileName = videoFileName.Replace(".mp4", ".jpg");
+            // slice out the first letter of the video file name to get ride of the converted prefix
+            return $"{ThumbnailPrefix}{videoFileName.Substring(1)}";
         }
 
         public async Task<string> SaveTemporaryVideo(IFormFile video)

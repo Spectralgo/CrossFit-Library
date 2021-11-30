@@ -39,7 +39,6 @@ import CategoryForm from "./category-form";
 export default {
   name: "content-creation-dialog",
   components: {TrickSteps, SubmissionSteps, DifficultyForm, CategoryForm},
-  // Todo: does we use this? mixins: [],
   computed: {
     ...mapState('video-upload', ['active', 'component']),
     menuItems() {

@@ -61,14 +61,22 @@ namespace CrossFitLibrary.Api
                     {
                         TrickId = "snatch",
                         Description = "I'm just trying my best",
-                        VideoFileName = "cseeded_video.mp4",
+                        Video = new Video
+                        {
+                            VideoLink = "one.mp4",
+                            ThumbnailLink = "one.jpg"
+                        },
                         VideoProcessed = true
                     });
                     ctx.Add(new Submission
                     {
                         TrickId = "clean",
                         Description = "best clean of all time",
-                        VideoFileName = "cseeded_video.mp4",
+                        Video = new Video
+                        {
+                            VideoLink = "two.mp4",
+                            ThumbnailLink = "two.jpg"
+                        },
                         VideoProcessed = true
                     });
                     ctx.SaveChanges();

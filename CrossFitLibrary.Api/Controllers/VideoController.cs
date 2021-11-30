@@ -54,12 +54,12 @@ namespace CrossFitLibrary.Api.Controllers
 
             
             
-            if (!_videoManager.TemporaryVideoExists(videoFileName))
+            if (!_videoManager.FileExists(videoFileName))
             {
                 return NoContent();
             }
             
-            _videoManager.DeleteTemporaryVideo(videoFileName);
+            _videoManager.DeleteFile(videoFileName);
             
             return Ok();
         }

@@ -7,6 +7,7 @@ using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -40,6 +41,7 @@ namespace CrossFitLibrary.Api.Controllers
         public IEnumerable<Submission> GetSub(string trickId)
         {
             var result = _ctx.Submissions
+                .Include(x => x.Video)
                 .Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase)).ToList();
             return result;
         }

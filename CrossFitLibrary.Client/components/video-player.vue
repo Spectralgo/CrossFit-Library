@@ -3,7 +3,13 @@
     <div class="play-button" :class="{'hide' : playing}" @click="playing = !playing" >
         <v-icon size="78" >mdi-play</v-icon>
     </div>
-    <video ref="video" :src="`http://localhost:5000/api/video/${videoFileName}`" loop muted ></video>
+    <video ref="video"
+           :src="`http://localhost:5000/api/video/${video.videoLink}`"
+           :poster="`http://localhost:5000/api/video/${video.thumbnailLink}`"
+           preload="none"
+           playsinline
+           loop muted
+    ></video>
   </div>
 </template>
 
@@ -12,8 +18,8 @@
 export default {
   name: "video-player",
   props: {
-    videoFileName: {
-      type: String,
+    video: {
+      type: Object,
       required: true
     }
   },
@@ -42,15 +48,15 @@ export default {
   border-top-right-radius: inherit;
   border-top-left-radius: inherit;
   .play-button{
-    // position on top of the video
+     //position on top of the video
+    position: absolute;
+    z-index: 2;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: absolute;
     background-color: rgba($color: #000000, $alpha: 0.36);
     width: 100%;
     height: 100%;
-    z-index: 2;
 
     &.hide{
       opacity: 0;

@@ -11,6 +11,7 @@ namespace CrossFitLibrary.Data
 
         public DbSet<Trick> Tricks { get; set; }
         public DbSet<Submission> Submissions { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         public DbSet<Difficulty> Difficulties { get; set; }
         public DbSet<Category> Categories { get; set; }
