@@ -4,7 +4,7 @@
       <template v-slot:activator="{on}">
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on">
+            <v-btn class="primary" v-bind="attrs" v-on="on">
               Create
             </v-btn>
           </template>
