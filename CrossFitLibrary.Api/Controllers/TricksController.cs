@@ -8,6 +8,7 @@ using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -25,7 +26,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet]
         public IEnumerable<object> All()
         {
-            return _ctx.Tricks.Select(TrickViewModels.Default).ToList();
+            return _ctx.Tricks.Select(TrickViewModels.Projection).ToList();
         }
 
         [HttpGet("{id}")]
@@ -33,7 +34,7 @@ namespace CrossFitLibrary.Api.Controllers
         {
             return _ctx.Tricks
                 .Where(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase))
-                .Select(TrickViewModels.Default)
+                .Select(TrickViewModels.Projection)
                 .FirstOrDefault();
         }
 
@@ -62,7 +63,7 @@ namespace CrossFitLibrary.Api.Controllers
 
             _ctx.Add(trick);
             await _ctx.SaveChangesAsync();
-            return TrickViewModels.Default.Compile().Invoke(trick);
+            return TrickViewModels.Create(trick);
         }
 
         [HttpPut]
@@ -76,7 +77,7 @@ namespace CrossFitLibrary.Api.Controllers
 
             _ctx.Add(trick);
             await _ctx.SaveChangesAsync();
-            return TrickViewModels.Default.Compile().Invoke(trick);
+            return TrickViewModels.Create(trick);
         }
 
 

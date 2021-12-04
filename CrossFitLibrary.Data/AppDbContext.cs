@@ -1,4 +1,5 @@
 ﻿using CrossFitLibrary.Models;
+using CrossFitLibrary.Models.Moderation;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Data
@@ -17,6 +18,10 @@ namespace CrossFitLibrary.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<TrickCategory> TrickCategories { get; set; }
         public DbSet<TrickRelationship> TrickRelationships { get; set; }
+        public DbSet<ModerationItem> ModerationItems { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

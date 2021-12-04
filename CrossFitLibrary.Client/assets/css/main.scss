@@ -3,3 +3,17 @@
   position: -webkit-sticky;
   top: 60px;
 }
+
+.fpt-0{
+  .v-stepper__content{
+    padding-top: 0;
+  }
+}
+
+.fmb-1-for-btn{
+  .v-stepper__content{
+    .v-btn{
+      margin-bottom: 1px;
+    }
+  }
+}

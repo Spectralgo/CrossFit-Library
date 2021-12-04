@@ -2,12 +2,13 @@
   <v-app dark>
     <div>
       <v-app-bar app dense>
+
         <v-toolbar-title>
-<nuxt-link to="/" style="text-decoration: none" class="text-h5 text--primary">Woder</nuxt-link>
+          <nuxt-link class="text-h5 text--primary" style="text-decoration: none" to="/">Woder</nuxt-link>
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
-
+        <v-btn depressed to="moderation">Moderation</v-btn>
         <ContentCreationDialog/>
 
       </v-app-bar>
@@ -24,6 +25,8 @@
 import ContentCreationDialog from "../components/content-creation/content-creation-dialog";
 
 export default {
-components: {ContentCreationDialog}
+  components: {ContentCreationDialog}
 }
 </script>
+
+<style></style>

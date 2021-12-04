@@ -18,6 +18,10 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  // Api config for accessing environment variables (e.g. API_URL in .env)
+  publicRuntimeConfig: {
+    api: process.env.API_URL
+  },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: ['@/assets/css/main.scss'

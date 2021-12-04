@@ -25,15 +25,15 @@
         <v-stepper-step step="4">Review</v-stepper-step>
       </v-stepper-header>
 
-      <v-stepper-items >
+      <v-stepper-items class="fpt-0 fmb-1-for-btn" >
 
-        <v-stepper-content  class="pt-0" step="1">
+        <v-stepper-content   step="1">
           <div>
             <v-file-input accept="video/*" label="Video upload" @change="handleFile"></v-file-input>
           </div>
         </v-stepper-content>
 
-        <v-stepper-content class="pt-0" step="2">
+        <v-stepper-content  step="2">
           <div>
             <v-select :items="trickItems" label="Select Trick" @change="selectTrick"></v-select>
 
@@ -44,7 +44,7 @@
         </v-stepper-content>
 
 
-        <v-stepper-content class="pt-0" step="3">
+        <v-stepper-content  step="3">
           <div>
             <v-text-field v-model="form.description" label="Description"></v-text-field>
             <div class="d-flex justify-center">
@@ -53,7 +53,7 @@
           </div>
         </v-stepper-content>
 
-        <v-stepper-content class="pt-0" step="4">
+        <v-stepper-content  step="4">
           <div>
             <div>
               Success!

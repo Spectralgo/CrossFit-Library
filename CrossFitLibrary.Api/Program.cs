@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
+using CrossFitLibrary.Models.Moderation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -79,6 +80,12 @@ namespace CrossFitLibrary.Api
                         },
                         VideoProcessed = true
                     });
+                    ctx.Add(new ModerationItem
+                        {
+                            Target = "snatch",
+                            Type = ModerationItemTypes.Trick,
+                        }
+                    );
                     ctx.SaveChanges();
                 }
             }
