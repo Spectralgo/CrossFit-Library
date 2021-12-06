@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -56,5 +58,81 @@ namespace CrossFitLibrary.Api.Controllers
             await _ctx.SaveChangesAsync();
             return Ok(CommentViewModel.Create(reply));
         }
+
+       // Tricks Section  //
+        [HttpGet("{id}/tricks")]
+        public IEnumerable<object> GetTrickComments(string id)
+        {
+            return  _ctx.Comments
+                .Where(x => x.TrickId.Equals(id))
+                .Select(CommentViewModel.Projection);
+        }
+
+        [HttpPost("{id}/tricks")]
+        public async Task<IActionResult> CreateCommentForTrick(string id, [FromBody] Comment newComment)
+        {
+            // this is  the comment we are adding a reply to
+            var trick = _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id) );
+
+            if (trick == null)
+            {
+                return NotFound();
+            }
+
+            var regex = new Regex(@"\B(?<tag>@[\w\d-]+)");
+
+            newComment.HtmlContent = newComment.Content;
+
+            foreach (Match match in regex.Matches(newComment.Content))
+            {
+                var tag = match.Groups["tag"].Value;
+                newComment.HtmlContent = newComment.HtmlContent.Replace(
+                    tag,
+                    $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
+            }
+
+            trick.Comments.Add(newComment);
+            await _ctx.SaveChangesAsync();
+           return Ok(CommentViewModel.Create(newComment));
+        }
+
+       // Submissions Section  //
+        [HttpGet("{id}/submissions")]
+        public IEnumerable<object> GetSubmissionComments(int id)
+        {
+            return  _ctx.Comments
+                .Where(x => x.SubmissionId == id)
+                .Select(CommentViewModel.Projection);
+        }
+
+        [HttpPost("{id}/submissions")]
+        public async Task<IActionResult> CreateCommentForSubmission(int id, [FromBody] Comment newComment)
+        {
+            // this is  the comment we are adding a reply to
+            var submission = _ctx.Submissions.FirstOrDefault(x => x.Id == id );
+
+            if (submission == null)
+            {
+                return NotFound();
+            }
+
+            var regex = new Regex(@"\B(?<tag>@[\w\d-]+)");
+
+            newComment.HtmlContent = newComment.Content;
+
+            foreach (Match match in regex.Matches(newComment.Content))
+            {
+                var tag = match.Groups["tag"].Value;
+                newComment.HtmlContent = newComment.HtmlContent.Replace(
+                    tag,
+                    $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
+            }
+
+            submission.Comments.Add(newComment);
+            await _ctx.SaveChangesAsync();
+           return Ok(CommentViewModel.Create(newComment));
+        }
+
+
     }
 }

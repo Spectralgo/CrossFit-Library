@@ -86,6 +86,13 @@ namespace CrossFitLibrary.Api
                             Type = ModerationItemTypes.Trick,
                         }
                     );
+                    ctx.Add(new Comment
+                    {
+                        Content = "This is a comment, I hope it works, I'm just trying to see if it works",
+                        HtmlContent = "This is a comment, I hope it works, I'm just trying to see if it works",
+                        TrickId = "snatch",
+
+                    });
                     ctx.SaveChanges();
                 }
             }

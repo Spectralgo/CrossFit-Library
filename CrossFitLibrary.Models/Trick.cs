@@ -2,7 +2,7 @@
 
 namespace CrossFitLibrary.Models
 {
-    public class Trick : BaseModel<string>
+    public class Trick : BaseModel<string>, ICommentable
     {
 
         // from BaseModel
@@ -16,5 +16,6 @@ namespace CrossFitLibrary.Models
         public IList<TrickRelationship> Prerequisites { get; set; }
         public IList<TrickRelationship> Progressions { get; set; }
         public IList<TrickCategory> TrickCategories { get; set; }
+        public IList<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
