@@ -22,7 +22,6 @@
     <!--    </div>-->
     <div v-if="trickId">
       <Comments v-bind:targetId="trickId" v-bind:type="type"/>
-      {{this.trickId}}
     </div>
   </div>
 
@@ -30,7 +29,7 @@
 </template>
 
 <script>
-import Comments from '@/components/Comments.vue'
+import Comments from '@/components/comments/comment-section.vue'
 
 const endpointResolver = (type) => {
   if (type === 'trick') return 'tricks'

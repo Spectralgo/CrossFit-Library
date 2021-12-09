@@ -8,7 +8,7 @@
         </v-toolbar-title>
 
         <v-spacer></v-spacer>
-        <v-btn depressed to="moderation">Moderation</v-btn>
+        <v-btn depressed to="/moderation">Moderation</v-btn>
         <ContentCreationDialog/>
 
       </v-app-bar>
