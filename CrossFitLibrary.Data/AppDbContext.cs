@@ -20,6 +20,7 @@ namespace CrossFitLibrary.Data
         public DbSet<TrickRelationship> TrickRelationships { get; set; }
         public DbSet<ModerationItem> ModerationItems { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
 
 

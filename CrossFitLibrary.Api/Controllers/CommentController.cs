@@ -54,6 +54,7 @@ namespace CrossFitLibrary.Api.Controllers
                     $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
             }
 
+            reply.DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
             comment.Replies.Add(reply);
             await _ctx.SaveChangesAsync();
             return Ok(CommentViewModel.Create(reply));
@@ -71,7 +72,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost("{id}/tricks")]
         public async Task<IActionResult> CreateCommentForTrick(string id, [FromBody] Comment newComment)
         {
-            // this is  the comment we are adding a reply to
+            // this is  the trick we are adding a reply to
             var trick = _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id) );
 
             if (trick == null)
@@ -91,6 +92,8 @@ namespace CrossFitLibrary.Api.Controllers
                     $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
             }
 
+            
+            newComment.DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
             trick.Comments.Add(newComment);
             await _ctx.SaveChangesAsync();
            return Ok(CommentViewModel.Create(newComment));
@@ -108,7 +111,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost("{id}/submissions")]
         public async Task<IActionResult> CreateCommentForSubmission(int id, [FromBody] Comment newComment)
         {
-            // this is  the comment we are adding a reply to
+            // this is  the submission we are adding a reply to
             var submission = _ctx.Submissions.FirstOrDefault(x => x.Id == id );
 
             if (submission == null)
@@ -128,6 +131,7 @@ namespace CrossFitLibrary.Api.Controllers
                     $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
             }
 
+            newComment.DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");;
             submission.Comments.Add(newComment);
             await _ctx.SaveChangesAsync();
            return Ok(CommentViewModel.Create(newComment));

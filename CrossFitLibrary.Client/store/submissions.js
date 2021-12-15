@@ -8,7 +8,6 @@ export const state = initState;
 
 export const mutations = {
   setSubmissions(state, submissions){
-    console.log("from set mutation set sub", submissions)
     state.submissions =  submissions
   },
   reset(state){
@@ -24,7 +23,6 @@ export const actions = {
     console.log("Submissions: ", submissions)
   },
   createSubmission({commit, dispatch, state}, {form}) {
-    console.log("from create submsion video file name is: ", form.videoFileName)
     return this.$axios.$post("/api/submissions", form );
   }
 

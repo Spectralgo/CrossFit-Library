@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection.Metadata;
+using System.Security.Principal;
 using CrossFitLibrary.Models.Moderation;
 
 namespace CrossFitLibrary.Models
@@ -7,6 +10,11 @@ namespace CrossFitLibrary.Models
     {
         public string Content { get; set; }
         public string HtmlContent { get; set; }
+        public int Likes { get; set; } // Todo: implement likes in the comment component
+
+        public string DateOfCreation { get; set; }  
+        // I'm using this format, when I add it form the Comment controller:
+        // DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
         
         public int? ModerationItemId { get; set; } // Target(where) , Type(what)
         
