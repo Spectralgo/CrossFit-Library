@@ -92,6 +92,15 @@ export default {
       // } else {
       //   this.$axios.$post(`api/moderation-items/${modId}/comments`, data).then((comment) => this.comments.push(commentWithReplies(comment)))
       // }
+      // if (this.parentId > 0) {
+      //   this.$axios.$post(`api/comments/${this.parentId}/replies`, data)
+      //     .then((comment) => this.comments
+      //       .find(x => x.id === this.parentId)
+      //       .replies
+      //       .push(comment))
+      // } else {
+      //   this.$axios.$post(`api/moderation-items/${modId}/comments`, data).then((comment) => this.comments.push(commentWithReplies(comment)))
+      // }
       this.$axios.$post(`api/comments/${this.parentId}/tricks`, data)
         .then((comment) => this.comments
           .push(comment))
