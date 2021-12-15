@@ -81,7 +81,6 @@ export default {
   async fetch() {
     const trickId = this.$route.params.trick
     this.trick = this.trickById(this.$route.params.trick)
-    console.log("from fetch", this.trick)
     this.difficulty = this.difficultyById(this.trick.difficulty)
     await this.$store.dispatch("submissions/fetchSubmissionsForTrick", {trickId}, {root: true});
   },

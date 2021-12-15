@@ -14,9 +14,10 @@
       </v-app-bar>
     </div>
     <v-main>
-      <v-container>
+      <v-container v-if="$vuetify.breakpoint.smOnly">
         <Nuxt/>
       </v-container>
+        <Nuxt v-else/>
     </v-main>
   </v-app>
 </template>

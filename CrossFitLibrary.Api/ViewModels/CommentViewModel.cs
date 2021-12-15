@@ -16,6 +16,7 @@ namespace CrossFitLibrary.Api.ViewModels
             comment.ParentId,
             comment.Content,
             comment.HtmlContent,
+            comment.DateOfCreation
         };
         
     }

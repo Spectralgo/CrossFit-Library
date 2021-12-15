@@ -3,25 +3,31 @@
     <div v-if="item">
       {{ item.description }}
     </div>
-    <!--    <div>-->
-    <!--      <div v-if="parentId > 0">-->
-    <!--        Replying to: {{ parentId }}-->
-    <!--        <v-btn @click="parentId = 0">Clear</v-btn>-->
-    <!--      </div>-->
-    <!--      <v-text-field v-model="comment" label="Comment"></v-text-field>-->
-    <!--      <v-btn @click="send">send</v-btn>-->
-    <!--    </div>-->
-    <!--    <div v-for="c in comments" class="my-1">-->
-    <!--      <span v-html="c.htmlContent"></span>-->
-    <!--      <v-btn @click="parentId = c.id">Reply</v-btn>-->
-    <!--  changing parentId to a trick instead of a comment-->
-    <!--      <v-btn @click="loadReplies(c)">Load Replies</v-btn>-->
-    <!--      <div v-for="r in c.replies">-->
-    <!--        {{r.htmlContent}}-->
-    <!--      </div>-->
-    <!--    </div>-->
     <div v-if="trickId">
-      <Comments v-bind:targetId="trickId" v-bind:type="type"/>
+
+      <v-row>
+        <v-col cols="7">
+          <CommentSection v-bind:targetId="trickId" v-bind:type="type"/>
+        </v-col>
+        <v-col cols="5">
+          <v-card>
+            <v-card-title>Reviews (0 / 3)</v-card-title>
+              <v-card-text>
+                <div>
+                  No Reviews
+                </div>
+                <v-divider class="my-2"> </v-divider>
+
+                <v-text-field label="Review Comment" v-model="reviewComment"></v-text-field>
+              </v-card-text>
+            <v-card-actions>
+              <v-btn>Approve</v-btn>
+              <v-btn>Reject</v-btn>
+              <v-btn>Wait</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
     </div>
   </div>
 
@@ -29,38 +35,48 @@
 </template>
 
 <script>
-import Comments from '@/components/comments/comment-section.vue'
+import CommentSection from '@/components/comments/comment-section.vue'
 
 const endpointResolver = (type) => {
   if (type === 'trick') return 'tricks'
 }
 
-const commentWithReplies = (comment) => {
-  return {
-    ...comment,
-    replies: [],
-  }
+const REVIEW_STATUS = {
+  APPROVED: 0,
+  REJECTED: 1,
+  WAITING: 2,
 }
+
+const reviewStatusColor = (status) => {
+  if(REVIEW_STATUS.REJECTED === status) return "red"
+  if(REVIEW_STATUS.WAITING === status) return "orange"
+  if(REVIEW_STATUS.APPROVED === status) return "green"
+}
+
+
+const reviewStatusIcon = (status) => {
+  if(REVIEW_STATUS.REJECTED === status) return "mdi-check"
+  if(REVIEW_STATUS.WAITING === status) return "mdi-close"
+  if(REVIEW_STATUS.APPROVED === status) return "mdi-time" // Todo: continue at 17:36
+}
+
+
 
 export default {
 
   components: {
-    Comments,
+    CommentSection,
   },
   data() {
     return {
       item: null,
       comments: [],
-      comment: "",
+      reviewComment: "",
       parentId: "",
       modId: null,
       type: null,
       trickId: null,
     }
-  },
-  beforeCreate() {
-
-    // console.log('before create modId', this.modId)
   },
   created() {
 
@@ -70,37 +86,13 @@ export default {
 
     const endpoint = endpointResolver(this.type)
     this.$axios.$get(`api/${endpoint}/${this.trickId}`).then((item) => this.item = item)
-    // this.$axios.$get(`api/moderation-items/${modId}/comments`)
-    // .then((comments) => this.comments = comments.map(commentWithReplies))
-    // this.$axios.$get(`api/comments/${this.parentId}/tricks`).then((comments) => this.comments = comments)
-
-    // console.log('create modId', this.modId)
   },
   computed: {},
   methods: {
     send() {
-      // const {modId, trickId} = this.$route.params;
       const data = {content: this.comment}
       this.parentId = trickId
 
-      // if (this.parentId > 0) {
-      //   this.$axios.$post(`api/comments/${this.parentId}/replies`, data)
-      //     .then((comment) => this.comments
-      //       .find(x => x.id === this.parentId)
-      //       .replies
-      //       .push(comment))
-      // } else {
-      //   this.$axios.$post(`api/moderation-items/${modId}/comments`, data).then((comment) => this.comments.push(commentWithReplies(comment)))
-      // }
-      // if (this.parentId > 0) {
-      //   this.$axios.$post(`api/comments/${this.parentId}/replies`, data)
-      //     .then((comment) => this.comments
-      //       .find(x => x.id === this.parentId)
-      //       .replies
-      //       .push(comment))
-      // } else {
-      //   this.$axios.$post(`api/moderation-items/${modId}/comments`, data).then((comment) => this.comments.push(commentWithReplies(comment)))
-      // }
       this.$axios.$post(`api/comments/${this.parentId}/tricks`, data)
         .then((comment) => this.comments
           .push(comment))

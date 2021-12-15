@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
@@ -91,8 +92,10 @@ namespace CrossFitLibrary.Api
                         Content = "This is a comment, I hope it works, I'm just trying to see if it works",
                         HtmlContent = "This is a comment, I hope it works, I'm just trying to see if it works",
                         TrickId = "snatch",
+                        DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
 
                     });
+                    
                     ctx.SaveChanges();
                 }
             }
