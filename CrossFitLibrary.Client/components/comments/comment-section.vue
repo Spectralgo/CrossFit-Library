@@ -16,12 +16,7 @@
 <script>
 import CommentPost from '@/components/comments/CommentPost'
 
-const getReplies = (comments) => {
-};
 
-const endpointResolver = (type) => {
-  if (type === "trick") return "tricks";
-};
 
 export default {
   name: "Comments",
@@ -29,11 +24,7 @@ export default {
     CommentPost
   },
   props: {
-    targetId: {
-      type: String,
-      required: true,
-    },
-    type: {
+    commentsApiUrl: {
       type: String,
       required: true,
     },
@@ -47,7 +38,7 @@ export default {
     sendComment() {
       const data = {content: this.comment};
       this.$axios
-        .$post(`api/comments/${this.targetId}/${this.endpoint}`, data)
+        .$post(this.commentsApiUrl, data)
         .then((commentWithoutReplies) =>  {
           const replies = []
           const comment = {...commentWithoutReplies, replies }
@@ -57,13 +48,12 @@ export default {
     },
   },
   created() {
-    this.endpoint = endpointResolver(this.type);
 
     const replies = []
     const thisComments = []
 
     this.$axios
-      .$get(`api/comments/${this.targetId}/${this.endpoint}`)
+      .$get(this.commentsApiUrl)
       .then((comments) => {
         comments.forEach(function (comment) {
           comment = {...comment, replies}
@@ -77,7 +67,6 @@ export default {
 },
 }
 
-// id = target (trick, submission, moderationItem, comment)
 </script>
 
 <style scoped>
@@ -85,6 +74,5 @@ export default {
   opacity: 90%;
   background: linear-gradient(341deg, #06bcb2 25%, #2980b9 75%),
   linear-gradient(45deg, #2c3e50 25%, #2980b9 75%);
-  /*background: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 100%);*/
 }
 </style>

@@ -4,6 +4,8 @@ using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using CrossFitLibrary.Models.Moderation;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -91,12 +93,25 @@ namespace CrossFitLibrary.Api
                     {
                         Content = "This is a comment, I hope it works, I'm just trying to see if it works",
                         HtmlContent = "This is a comment, I hope it works, I'm just trying to see if it works",
-                        TrickId = "snatch",
+                        // TrickId = "snatch",
+                        ModerationItemId = 1,
                         DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
 
                     });
+                    ctx.Add(new Comment
+                    {
+                        Content = "A comment related to a trick",
+                        HtmlContent = "A comment related to a trick",
+                        TrickId = "snatch",
+                        DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
+                    });
                     
                     ctx.SaveChanges();
+
+
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                    var user = new IdentityUser("test");
+                    userManager.CreateAsync(user, "password").GetAwaiter().GetResult();
                 }
             }
 

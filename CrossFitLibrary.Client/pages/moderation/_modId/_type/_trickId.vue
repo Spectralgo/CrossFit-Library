@@ -7,23 +7,36 @@
 
       <v-row>
         <v-col cols="7">
-          <CommentSection v-bind:targetId="trickId" v-bind:type="type"/>
+          <CommentSection :comments-api-url="commentsApiUrl"/>
         </v-col>
         <v-col cols="5">
           <v-card>
-            <v-card-title>Reviews (0 / 3)</v-card-title>
-              <v-card-text>
-                <div>
-                  No Reviews
+            <v-card-title>Approved Reviews {{approvedCount}} / {{reviews.length}})</v-card-title>
+            <v-card-text>
+              <div v-if="reviews.length > 0">
+                <div v-for="r in reviews" :key="`review-${r.id}`">
+                  <v-icon :color="reviewStatusColor(r.status)">{{reviewStatusIcon(r.status)}}</v-icon>
+                  {{r.reviewComment}}
                 </div>
-                <v-divider class="my-2"> </v-divider>
 
-                <v-text-field label="Review Comment" v-model="reviewComment"></v-text-field>
-              </v-card-text>
-            <v-card-actions>
-              <v-btn>Approve</v-btn>
-              <v-btn>Reject</v-btn>
-              <v-btn>Wait</v-btn>
+              </div>
+              <div v-else>
+                No Reviews
+              </div>
+              <v-divider class="my-2"></v-divider>
+
+              <v-text-field v-model="reviewComment" label="Review Comment"></v-text-field>
+            </v-card-text>
+            <v-card-actions class="justify-center">
+              <v-btn v-for="action in reviewActions" :key="`ra-${action.title}`" :color="reviewStatusColor(action.status)"
+                     :disabled="action.disabled" class="white--text " x-small
+                     @click="sendReview(action.status)">
+
+                <v-icon>
+                  {{ reviewStatusIcon(action.status) }}
+                </v-icon>
+                {{ action.title }}
+              </v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -48,18 +61,17 @@ const REVIEW_STATUS = {
 }
 
 const reviewStatusColor = (status) => {
-  if(REVIEW_STATUS.REJECTED === status) return "red"
-  if(REVIEW_STATUS.WAITING === status) return "orange"
-  if(REVIEW_STATUS.APPROVED === status) return "green"
+  if (REVIEW_STATUS.REJECTED === status) return "red"
+  if (REVIEW_STATUS.WAITING === status) return "orange"
+  if (REVIEW_STATUS.APPROVED === status) return "green"
 }
 
 
 const reviewStatusIcon = (status) => {
-  if(REVIEW_STATUS.REJECTED === status) return "mdi-check"
-  if(REVIEW_STATUS.WAITING === status) return "mdi-close"
-  if(REVIEW_STATUS.APPROVED === status) return "mdi-time" // Todo: continue at 17:36
+  if (REVIEW_STATUS.REJECTED === status) return "mdi-close"
+  if (REVIEW_STATUS.WAITING === status) return "mdi-clock"
+  if (REVIEW_STATUS.APPROVED === status) return "mdi-check"
 }
-
 
 
 export default {
@@ -71,32 +83,65 @@ export default {
     return {
       item: null,
       comments: [],
+      reviews: [],
       reviewComment: "",
       parentId: "",
       modId: null,
       type: null,
       trickId: null,
+      commentsApiUrl: null,
+      reviewApiUrl: null,
     }
   },
   created() {
 
     this.trickId = this.$route.params.trickId
     this.modId = this.$route.params.modId
-    this.type = this.$route.params.type
+    this.type = this.$route.params.type // is shoul get the moderation comment from the comment Section componenent
+    this.commentsApiUrl = `api/moderation-items/${this.modId}/comments`
+    this.reviewApiUrl = `api/moderation-items/${this.modId}/reviews`
+
+    console.log(this.commentsApiUrl)
 
     const endpoint = endpointResolver(this.type)
     this.$axios.$get(`api/${endpoint}/${this.trickId}`).then((item) => this.item = item)
-  },
-  computed: {},
-  methods: {
-    send() {
-      const data = {content: this.comment}
-      this.parentId = trickId
 
-      this.$axios.$post(`api/comments/${this.parentId}/tricks`, data)
+    this.$axios.$get(this.commentsApiUrl).then((comments) => this.comments = comments)
+
+    this.$axios.$get(this.reviewApiUrl).then((reviews) => this.reviews = reviews)
+  },
+  computed: {
+    reviewActions() {
+      return [
+        {title: "Approve", status: REVIEW_STATUS.APPROVED, disabled: false},
+        {title: "Rejected", status: REVIEW_STATUS.REJECTED, disabled: !this.reviewComment},
+        {title: "Waiting", status: REVIEW_STATUS.WAITING, disabled: !this.reviewComment}
+      ]
+    },
+    approvedCount(){
+      return this.reviews.filter(x => x.status === REVIEW_STATUS.APPROVED).length
+    }
+  },
+  methods: {
+    reviewStatusColor,
+    reviewStatusIcon,
+
+    sendComment() {
+      const data = {content: this.comment}
+      this.$axios.$post(this.commentsApiUrl, data)
         .then((comment) => this.comments
           .push(comment))
       this.comment = ""
+    },
+    sendReview(status) {
+      const data = {
+        reviewComment: this.reviewComment,
+        status: status
+      }
+      this.$axios.$post(this.reviewApiUrl, data)
+        .then((review) => this.reviews
+          .push(review))
+      this.reviewComment = ""
     },
     async loadReplies(comment) {
       comment.replies = await this.$axios.$get(`api/comments/${comment.id}/replies`)

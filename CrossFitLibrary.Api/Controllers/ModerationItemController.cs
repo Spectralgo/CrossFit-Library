@@ -82,7 +82,6 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost("{id}/reviews")]
         public async Task<IActionResult> AddReview(int id, [FromBody] Review review)
         {
-            review.ModerationItemId = id; // @Note: It might be already set in the frontend (FRenard 2021-12-13)
 
             // Be sure the moderationItem exists
             if (!_ctx.ModerationItems.Any(x => x.Id == id))
@@ -90,9 +89,9 @@ namespace CrossFitLibrary.Api.Controllers
                 return NoContent();
             }
             
-            _ctx.Add(review); // @Note: Is it the same as doing this _ctx.Reviews.Add(review)
+            review.ModerationItemId = id; // ? It might be already set in the frontend (FRenard 2021-12-13)
             
-            
+            _ctx.Add(review); // Is it the same as doing this _ctx.Reviews.Add(review)
             await _ctx.SaveChangesAsync();
             return Ok(ReviewViewModel.Create(review));
         }

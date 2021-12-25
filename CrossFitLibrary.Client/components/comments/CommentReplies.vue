@@ -4,19 +4,20 @@
 
       <template v-slot:default="{ hover }">
         <v-card-text :class="`elevation-${hover ? 1 : 0}`" :style="`background-color: ${replyColor}`"
-                     class="font-weight-regular py-0 rounded" min-width="20"
-                     v-on:mouseleave="showReplyColor($event)" v-on:mousemove="showReplyColor($event)"
-                     @click="$emit('forcefocus', userId)">
+                     class="font-weight-regular py-0 rounded" min-width="20" @click="forceFocus"
+
+                     v-on:mouseleave="showReplyColor($event)" v-on:mousemove="showReplyColor($event)">
 
 
-
-          <div class="mt-2 mb-2 font-weight-bold" style="font-size: smaller ">{{userId}}<span class="ml-2 font-weight-light"
-                                                           style="color: lightsteelblue; font-size: small">{{
+          <div class="mt-2 mb-2 font-weight-bold" style="font-size: smaller ">{{ userId }}<span
+            class="ml-2 font-weight-light" style="color: lightsteelblue; font-size: small">{{
               dateOfCreationCount
             }}</span></div>
           <v-row class="ml-0" style="position: relative">
-            <div v-html="reply.htmlContent" style="font-size: smaller; line-height: 1.2"></div>
-            <v-btn v-if="hover" class="ma-0" style="position: absolute; bottom: 5px; left: -45px" icon><v-icon > mdi-reply</v-icon></v-btn>
+            <div  style="font-size: smaller;  line-height: 1.2" v-html="reply.htmlContent"></div>
+            <v-btn v-if="hover" class="ma-0" icon style="position: absolute; bottom: 5px; left: -45px">
+              <v-icon> mdi-reply</v-icon>
+            </v-btn>
           </v-row>
         </v-card-text>
       </template>
@@ -45,14 +46,17 @@ export default {
   }),
   methods: {
     showReplyColor(e) {
-      if (e.type  === 'mouseleave') {
+      if (e.type === 'mouseleave') {
         return this.replyColor = "white"
       }
       return this.replyColor = "#f2f5ff"
 
+    },
+    forceFocus(e) {
+
+      console.log(e.target.style.cursor)
     }
   },
-  // add reply btn Todo: insert login name for the reply like in twitch and make elevation-1 visible on hover
   created() {
     this.$axios.$get(
       `api/comments/${this.reply.id}/replies`
@@ -60,7 +64,6 @@ export default {
       this.reply.replies = replies
       this.hasReplies = true
     });
-
 
 
     // Date formatting of this.comment
