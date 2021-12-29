@@ -41,11 +41,15 @@ export const actions = {
   // Gets called by nuxt at first load in the index store before rendering
   // Calls the Dotnet Api to get list of all tricks, categories and difficulties and store them locally in this store
   async fetchTricks({commit}){
-    const tricks =  await this.$axios.$get("/api/tricks")
-    const categories =  await this.$axios.$get("/api/categories")
-    const difficulties =  await this.$axios.$get("/api/difficulties")
-    console.log("Tricks:", tricks,"\nCategories: ", categories,"\nDifficulties: ", difficulties)
-    commit("setTricks",{tricks, categories, difficulties})
+    try{
+      const tricks =  await this.$axios.$get("/api/tricks")
+      const categories =  await this.$axios.$get("/api/categories")
+      const difficulties =  await this.$axios.$get("/api/difficulties")
+      console.log("Tricks:", tricks,"\nCategories: ", categories,"\nDifficulties: ", difficulties)
+      commit("setTricks",{tricks, categories, difficulties})
+    }catch (err){
+      console.log('error from fetch:',err)
+    }
   },
    createTrick({commit, dispatch, state}, {form}) {
     console.log("Create Trick: ", form)

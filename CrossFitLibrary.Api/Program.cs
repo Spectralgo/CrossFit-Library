@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using CrossFitLibrary.Models.Moderation;
@@ -110,8 +111,16 @@ namespace CrossFitLibrary.Api
 
 
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                    var user = new IdentityUser("test");
+                    var user = new IdentityUser("test@test.com");
                     userManager.CreateAsync(user, "password").GetAwaiter().GetResult();
+
+                    var mod = new IdentityUser("mod@test.com");
+                    userManager.CreateAsync(mod, "password").GetAwaiter().GetResult();
+                    userManager
+                        .AddClaimAsync(mod, new Claim(Startup.TrickingLibraryConstants.Claims.Role, Startup.TrickingLibraryConstants.Roles.Mod))
+                        .GetAwaiter()
+                        .GetResult();
+
                 }
             }
 
