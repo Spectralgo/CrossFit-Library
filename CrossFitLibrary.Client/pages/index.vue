@@ -1,7 +1,8 @@
 <template>
   <div>
     <div>
-      <v-btn @click="login">Login</v-btn>
+      <v-btn @click="api('test')">Api Test Auth</v-btn>
+      <v-btn @click="api('mod')">Api Mod Auth</v-btn>
     </div>
     <div v-for="s in sections">
       <div class="d-flex flex-column align-center">
@@ -19,34 +20,8 @@
 
 <script>
 import {mapState} from 'vuex';
-import {UserManager, WebStorageStateStore } from 'oidc-client';
 
 export default {
-  data: () => ({
-    userMgr: null,
-  }),
-  created() {
-    if (!process.server) {
-      this.userMgr = new UserManager({
-        authority: "http://localhost:5000",
-        client_id: "crossfit-library-client",
-        redirect_uri: "http://localhost:3000",
-        response_type: "code",
-        scope: "openid profile",
-        post_logout_redirect_uri: "http://localhost:3000",
-        // silent_redirect_uri: "http://localhost:3000",
-        userStore: new WebStorageStateStore({store: window.localStorage})
-      })
-
-      const {code, scope, session_state, state} = this.$route.query
-
-      if(code && scope && session_state && state){
-        this.userMgr.signinRedirectCallback().then(user => console.log(user))
-        this.$router.push('/')
-      }
-
-    }
-  },
   computed: {
     ...mapState('tricks', ['tricks', 'categories', 'difficulties']),
     sections() {
@@ -59,8 +34,16 @@ export default {
   },
   methods: {
     login() {
-       return this.userMgr.signinRedirect()
+       return
     },
+    logout() {
+      return
+    },
+    api(x){
+      return this.$axios.$get("/api/tricks/" + x)
+        .then( msg => console.log(msg))
+
+},
   }
 }
 

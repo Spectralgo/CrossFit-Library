@@ -6,6 +6,8 @@ using CrossFitLibrary.Api.Form;
 using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
+using IdentityServer4;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -28,6 +30,22 @@ namespace CrossFitLibrary.Api.Controllers
         {
             return _ctx.Tricks.Select(TrickViewModels.Projection).ToList();
         }
+        
+        [HttpGet("test")]
+        [Authorize(Policy = IdentityServerConstants.LocalApi.PolicyName )] 
+        public string TestAuth()
+        {
+            return "test";
+        }
+        
+        
+        [HttpGet("mod")]
+        [Authorize(Policy = Startup.TrickingLibraryConstants.Policies.Mod)] 
+        public string ModAuth()
+        {
+            return "Mod test";
+        }
+        
 
         [HttpGet("{id}")]
         public object Get(string id)

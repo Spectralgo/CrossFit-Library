@@ -1,0 +1,38 @@
+﻿@page
+@model CrossFitLibrary.Api.Pages.Account.Register
+
+@{
+    // Layout = "~/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Register";
+    Layout = "_Layout";
+}
+
+<form method="post">
+    <h1 class="title">Register</h1>
+    <input type="hidden" asp-for="Form.ReturnUrl" value="@Model.Form.ReturnUrl">
+    <divc class="field">
+        <label >Email</label>
+        <input asp-for="Form.Email">
+        <span asp-validation-for="Form.Email"></span>
+    </divc>
+
+    <div class="field">
+        <label >Password</label>
+        <input asp-for="Form.Password">
+        <span asp-validation-for="Form.Password"></span>
+    </div>
+    
+    <div class="field">
+        <label >Confirm Password</label>
+        <input asp-for="Form.ConfirmPassword">
+        <span asp-validation-for="Form.ConfirmPassword"></span>
+    </div>
+    <div class="field flex-row">
+        <button type="submit">Create Account</button>
+        <a asp-page="/Account/Login" asp-route-returnUrl="@Model.Form.ReturnUrl">Back to login</a>
+    </div>
+
+</form>
+
+<style>
+</style>

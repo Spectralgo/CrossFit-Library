@@ -14,4 +14,8 @@ export const actions = {
     nuxtServerInit({dispatch}){
     return dispatch("tricks/fetchTricks")
   },
+
+  clientInit({dispatch}){
+    return dispatch("auth/initialize")
+  },
 }

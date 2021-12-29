@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Channels;
 using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Data;
@@ -53,6 +54,7 @@ public class Startup
         app.UseCors(AllCors);
 
         app.UseAuthentication();
+        app.UseAuthorization();
         app.UseIdentityServer();
 
         app.UseEndpoints(endpoints =>
@@ -85,7 +87,11 @@ public class Startup
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
 
-        services.ConfigureApplicationCookie(config => { config.LoginPath = "/Account/Login"; });
+        services.ConfigureApplicationCookie(config =>
+        {
+            config.LoginPath = "/Account/Login";
+            config.LogoutPath = "/api/auth/logout";
+        });
 
 
         var identityServerBuilder = services.AddIdentityServer();
@@ -96,8 +102,20 @@ public class Startup
             identityServerBuilder.AddInMemoryIdentityResources(new IdentityResource[]
             { //scopes
                 new IdentityResources.OpenId(), //user identification
-                new IdentityResources.Profile() //user personal info
+                new IdentityResources.Profile(), //user personal info
+                new IdentityResource(TrickingLibraryConstants.IdentityResources.RoleScope,
+                    new [] { TrickingLibraryConstants.Claims.Role})
             });
+
+            identityServerBuilder.AddInMemoryApiScopes(new ApiScope[]
+            {
+                new ApiScope(IdentityServerConstants.LocalApi.ScopeName, new []
+                {
+                    TrickingLibraryConstants.Claims.Role
+                } )
+            });
+
+
 
             identityServerBuilder.AddInMemoryClients(new[]
             {
@@ -106,14 +124,16 @@ public class Startup
                     ClientId = "crossfit-library-client",
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = new[] { "http://localhost:3000" },
-                    PostLogoutRedirectUris = new[] { "http://localhost:3000" },
-                    AllowedCorsOrigins = new[] { "http://localhost:3000" },
-                    
+                    RedirectUris = new[] { "https://localhost:3000/oidc/sign-in-callback.html" },
+                    PostLogoutRedirectUris = new[] { "https://localhost:3000" },
+                    AllowedCorsOrigins = new[] { "https://localhost:3000" },
+
                     AllowedScopes = new[]
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.LocalApi.ScopeName,
+                        TrickingLibraryConstants.IdentityResources.RoleScope
                     },
 
                     RequirePkce = true,
@@ -122,7 +142,46 @@ public class Startup
                     RequireClientSecret = false
                 }
             });
+            
+            
+            
             identityServerBuilder.AddDeveloperSigningCredential();
+        }
+
+        services.AddLocalApiAuthentication();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(TrickingLibraryConstants.Policies.Mod, policy =>
+            {
+                var is4Policy = options.GetPolicy(IdentityServerConstants.LocalApi.PolicyName);
+                policy.Combine(is4Policy);
+                policy.RequireClaim(TrickingLibraryConstants.Claims.Role,
+                    TrickingLibraryConstants.Roles.Mod);
+            });
+        });
+    }
+
+    public struct TrickingLibraryConstants
+    {
+        public struct Policies
+        {
+            public const string Mod = nameof(Mod);
+        }
+        
+        public struct IdentityResources
+        {
+            public const string RoleScope = "role";
+        }
+
+        public struct Claims
+        {
+            public const string Role = "role";
+        }
+        
+        public struct Roles
+        {
+            public const string Mod = nameof(Mod);
         }
         
     }

@@ -1,7 +1,15 @@
 import colors from 'vuetify/es5/util/colors'
+import path from 'path'
+import fs from 'fs'
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+  server: {
+https: {
+  key: fs.readFileSync(path.relative(__dirname, 'server.key')),
+  cert: fs.readFileSync(path.relative(__dirname, 'server.cert')),
+}
+  },
   head: {
     titleTemplate: '%s - Woder App',
     title: 'Welcome',
@@ -20,7 +28,18 @@ export default {
   },
   // Api config for accessing environment variables (e.g. API_URL in .env)
   publicRuntimeConfig: {
-    api: process.env.API_URL
+    // Axios module configuration: https://go.nuxtjs.dev/config-axios
+    axios: {
+      baseURL: "https://localhost:5001",
+      https: true,
+    },
+  },
+
+  privateRuntimeConfig: {
+    axios: {
+      baseURL: "http://localhost:5000",
+      https: false,
+    },
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -29,6 +48,7 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/client-init.js', mode: 'client'}
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -46,10 +66,6 @@ export default {
     '@nuxtjs/axios',
   ],
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {
-    baseURL: "http://localhost:5000",
-  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
