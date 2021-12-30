@@ -6,8 +6,12 @@
     <title>@ViewData["Title"]</title>
 </head>
 <body>
-
+<div>
+    <h1 class="title">Woder.app</h1>
+    <div>
 @RenderBody()
+    </div>
+</div>
 
 </body>
 </html>
@@ -17,12 +21,23 @@
     text-align: center;
     font-size: 25px;
 }
+
+hr {
+width:  100%;
+}
     * {
         font-family: "Roboto", sans-serif !important;
+        box-sizing: border-box;
     }
+    .title{
+    font-size: 32px;
+    text-align: center;
+    }
+    
     body {
      min-height: 100vh;
      display: flex;
+     flex-direction: column;
      justify-content: center;
      align-items: center;
     }
@@ -30,7 +45,10 @@
     form {
     display: flex;
     flex-direction: column;
-    padding: 50px;
+    padding: 1.5rem 2rem;
+    max-width: 300px;
+    width: 100%;
+    margin: 0 1rem;
     border: solid 1px;
     border-radius: 10px;
     border-color: #eaeaea;
@@ -77,6 +95,13 @@
     display: flex;
     flex-direction: row;
      justify-content: space-evenly;
+    }
+    
+    .flex-col{
+    display: flex;
+    flex-direction: column;
+     justify-content: center;
+     align-items: center;
     }
     
     .field > button{

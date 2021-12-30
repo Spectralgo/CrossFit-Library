@@ -26,6 +26,17 @@ namespace CrossFitLibrary.Api
 
                 if (env.IsDevelopment())
                 {
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                    var testUser = new IdentityUser("test"){Email = "test@test.com"};
+                    userManager.CreateAsync(testUser, "password").GetAwaiter().GetResult();
+
+                    var mod = new IdentityUser("mod"){Email = "mod@test.com"};
+                    userManager.CreateAsync(mod, "password").GetAwaiter().GetResult();
+                    userManager
+                        .AddClaimAsync(mod, new Claim(Startup.TrickingLibraryConstants.Claims.Role, Startup.TrickingLibraryConstants.Roles.Mod))
+                        .GetAwaiter()
+                        .GetResult();
+                    
                     ctx.Add(new Difficulty { Id = "easy", Name = "Easy", Description = "Super easy to do test" });
                     ctx.Add(new Difficulty { Id = "hard", Name = "Hard", Description = "Hard Test" });
 
@@ -64,6 +75,7 @@ namespace CrossFitLibrary.Api
 
                     ctx.Add(new Submission
                     {
+                        UserId = testUser.Id,
                         TrickId = "snatch",
                         Description = "I'm just trying my best",
                         Video = new Video
@@ -75,6 +87,8 @@ namespace CrossFitLibrary.Api
                     });
                     ctx.Add(new Submission
                     {
+                        
+                        UserId = testUser.Id,
                         TrickId = "clean",
                         Description = "best clean of all time",
                         Video = new Video
@@ -110,16 +124,6 @@ namespace CrossFitLibrary.Api
                     ctx.SaveChanges();
 
 
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                    var user = new IdentityUser("test@test.com");
-                    userManager.CreateAsync(user, "password").GetAwaiter().GetResult();
-
-                    var mod = new IdentityUser("mod@test.com");
-                    userManager.CreateAsync(mod, "password").GetAwaiter().GetResult();
-                    userManager
-                        .AddClaimAsync(mod, new Claim(Startup.TrickingLibraryConstants.Claims.Role, Startup.TrickingLibraryConstants.Roles.Mod))
-                        .GetAwaiter()
-                        .GetResult();
 
                 }
             }

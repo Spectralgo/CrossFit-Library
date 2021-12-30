@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Threading.Channels;
 using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Data;
+using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
@@ -71,6 +72,8 @@ public class Startup
 
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
+                options.User.RequireUniqueEmail = true;
+                
                 if (_env.IsDevelopment())
                 {
                     options.Password.RequireDigit = false;
@@ -111,6 +114,7 @@ public class Startup
             {
                 new ApiScope(IdentityServerConstants.LocalApi.ScopeName, new []
                 {
+                    JwtClaimTypes.PreferredUserName,
                     TrickingLibraryConstants.Claims.Role
                 } )
             });
@@ -124,7 +128,12 @@ public class Startup
                     ClientId = "crossfit-library-client",
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = new[] { "https://localhost:3000/oidc/sign-in-callback.html" },
+                    RedirectUris = new[] 
+                    { 
+                        "https://localhost:3000/oidc/sign-in-callback.html",
+                        "https://localhost:3000/oidc/sign-in-silent-callback.html"
+                    },
+                    
                     PostLogoutRedirectUris = new[] { "https://localhost:3000" },
                     AllowedCorsOrigins = new[] { "https://localhost:3000" },
 
