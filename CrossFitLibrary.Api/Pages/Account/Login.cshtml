@@ -21,11 +21,13 @@
         <input asp-for="Form.Password">
         <span asp-validation-for="Form.Password"></span>
     </div>
-    <div class="field flex-row">
+    <div class="field flex-col">
         <button type="submit">Log In</button>
+     <hr>
         <a asp-page="/Account/Register" asp-route-returnUrl="@Model.Form.ReturnUrl"
         >Register
             </a>
+        
     </div>
 
 </form>
