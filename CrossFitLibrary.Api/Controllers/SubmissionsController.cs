@@ -6,13 +6,13 @@ using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Api.Form;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CrossFitLibrary.Api.Controllers
 {
-    [ApiController]
     [Route("api/submissions")]
-    public class SubmissionsController : ControllerBase
+    public class SubmissionsController : ApiController
     {
         private readonly AppDbContext _ctx;
 
@@ -35,6 +35,7 @@ namespace CrossFitLibrary.Api.Controllers
 
 
         [HttpPost]
+        [Authorize(Startup.TrickingLibraryConstants.Policies.User)]
         public async Task<IActionResult> Create(
             [FromBody] SubmissionForm submissionForm,
             [FromServices] Channel<EditVideoChannelMessage> channel,
@@ -49,7 +50,8 @@ namespace CrossFitLibrary.Api.Controllers
             {
                 TrickId = submissionForm.TrickId,
                 Description = submissionForm.Description,
-                VideoProcessed = false
+                VideoProcessed = false,
+                UserId = UserId
             };
 
             _ctx.Add(submission);
