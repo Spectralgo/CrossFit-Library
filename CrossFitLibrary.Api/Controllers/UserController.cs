@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
-using IdentityModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Api.Controllers;
 
-[ApiController]
 [Route("api/user")]
-public class UserController : ControllerBase
+[Authorize(Startup.TrickingLibraryConstants.Policies.User)]
+public class UserController : ApiController
 {
     private readonly AppDbContext _ctx;
 
@@ -23,8 +24,7 @@ public class UserController : ControllerBase
     [HttpGet("me")]
     public async Task<IActionResult> GetMe()
     {
-        var userId = User.Claims
-            .FirstOrDefault(x => x.Type.Equals(JwtClaimTypes.Subject))?.Value;
+        var userId = UserId;
         if (string.IsNullOrEmpty(userId))
         {
             return BadRequest();
@@ -37,17 +37,15 @@ public class UserController : ControllerBase
             return Ok(user);
         }
 
-        user = new User()
+        user = new User
         {
-            Id = userId,
-            Username = 
-         User.Claims
-            .FirstOrDefault(x => x.Type.Equals(JwtClaimTypes.PreferredUserName))?.Value
+            Id = UserId,
+            Username = UserName
         };
 
         _ctx.Add(user);
         await _ctx.SaveChangesAsync();
-        
+
         return Ok(user);
     }
 
@@ -56,6 +54,15 @@ public class UserController : ControllerBase
     public IActionResult GetUser(string id)
     {
         return Ok();
+    }
+
+
+    [HttpGet("{id}/submissions")]
+    public Task<List<Submission>> GetUserSubmissions(string id)
+    {
+        return _ctx.Submissions.Include(x => x.Video)
+            .Where(x => x.UserId.Equals(id))
+            .ToListAsync();
     }
 
     // [HttpPost]

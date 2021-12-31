@@ -175,6 +175,7 @@ public class Startup
     {
         public struct Policies
         {
+            public const string User = IdentityServerConstants.LocalApi.PolicyName;
             public const string Mod = nameof(Mod);
         }
         
