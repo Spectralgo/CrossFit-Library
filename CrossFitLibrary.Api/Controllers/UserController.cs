@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Api.Controllers;
 
-[Route("api/user")]
+[Route("api/users")]
 [Authorize(Startup.TrickingLibraryConstants.Policies.User)]
 public class UserController : ApiController
 {
@@ -65,6 +65,4 @@ public class UserController : ApiController
             .ToListAsync();
     }
 
-    // [HttpPost]
-    // public IActionResult CreateUser([FromBody] Object user) => Ok();
 }
