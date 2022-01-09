@@ -44,9 +44,9 @@ namespace CrossFitLibrary.Api.BackgroundServices
                 var video_info = await _channelReader.ReadAsync(stoppingToken);
 
                     var input_video_path = _videoManager.TemporarySavePath(video_info.VideoFileName);
-                    var output_video_name = _videoManager.GenerateConvertedVideoFileName();
+                    var output_video_name = VideoManager.GenerateConvertedVideoFileName();
                     var output_video_path = _videoManager.TemporarySavePath(output_video_name);
-                    var output_thumbnail_name = _videoManager.GenerateThumbnailFileName(output_video_name);
+                    var output_thumbnail_name = VideoManager.GenerateThumbnailFileName(output_video_name);
                     var output_thumbnail_path = _videoManager.TemporarySavePath(output_thumbnail_name);
                 try
                 {

@@ -12,6 +12,7 @@ namespace CrossFitLibrary.Api.BackgroundServices
         private const string TempPrefix = "temp_";
         private const string ConvertedPrefix = "c";
         private const string ThumbnailPrefix = "t";
+        private const string imagePrefix = "p";
         private readonly IWebHostEnvironment _env;
         
 
@@ -46,21 +47,26 @@ namespace CrossFitLibrary.Api.BackgroundServices
 
         }
 
-        public string DevVideoPath(string videoFileName)
+        public string GetSavePath(string fileName)
         {
-            return _env.IsProduction() ? null : Path.Combine(WorkingDirectory, videoFileName);
+            return _env.IsProduction() ? null : Path.Combine(WorkingDirectory, fileName);
         }
 
-        public string GenerateConvertedVideoFileName()
+        public static string GenerateConvertedVideoFileName()
         {
             return $"{ConvertedPrefix}{DateTime.Now.Ticks}.mp4";
         }
         
-        public string GenerateThumbnailFileName(string videoFileName)
+        public static string GenerateThumbnailFileName(string videoFileName)
         {
             videoFileName = videoFileName.Replace(".mp4", ".jpg");
             // slice out the first letter of the video file name to get ride of the converted prefix
             return $"{ThumbnailPrefix}{videoFileName.Substring(1)}";
+        }
+        
+        public static string GenerateImageFileName()
+        {
+            return $"{imagePrefix}{DateTime.Now.Ticks}.jpg";
         }
 
         public async Task<string> SaveTemporaryVideo(IFormFile video)

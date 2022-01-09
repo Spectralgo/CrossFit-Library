@@ -26,7 +26,7 @@ namespace CrossFitLibrary.Api.Controllers
         public IActionResult GetVideofile(string videoFileName)
         {
             
-            var video_path_during_dev = _videoManager.DevVideoPath(videoFileName);
+            var video_path_during_dev = _videoManager.GetSavePath(videoFileName);
             if (string.IsNullOrEmpty(video_path_during_dev))
             {
                 return BadRequest();
