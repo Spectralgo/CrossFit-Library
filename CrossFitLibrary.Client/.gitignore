@@ -90,5 +90,6 @@ sw.*
 *.swp
 
 # cert
-server.key
-server.cert
+*.key
+*.cert
+*.pem
