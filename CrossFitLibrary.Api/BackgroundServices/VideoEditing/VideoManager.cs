@@ -7,12 +7,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace CrossFitLibrary.Api.BackgroundServices
 {
+    //Maybe we should change this VideoManager class into a FileManager class
     public class VideoManager
     {
         private const string TempPrefix = "temp_";
         private const string ConvertedPrefix = "c";
         private const string ThumbnailPrefix = "t";
-        private const string imagePrefix = "p";
+        private const string ImagePrefix = "p";
         private readonly IWebHostEnvironment _env;
         
 
@@ -66,7 +67,7 @@ namespace CrossFitLibrary.Api.BackgroundServices
         
         public static string GenerateImageFileName()
         {
-            return $"{imagePrefix}{DateTime.Now.Ticks}.jpg";
+            return $"{ImagePrefix}{DateTime.Now.Ticks}.jpg";
         }
 
         public async Task<string> SaveTemporaryVideo(IFormFile video)
