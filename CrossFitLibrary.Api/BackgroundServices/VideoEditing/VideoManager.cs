@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace CrossFitLibrary.Api.BackgroundServices
 {
-    //Maybe we should change this VideoManager class into a FileManager class
     public class VideoManager
     {
         private const string TempPrefix = "temp_";
