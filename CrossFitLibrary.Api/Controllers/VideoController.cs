@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CrossFitLibrary.Api.BackgroundServices;
+using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +15,11 @@ namespace CrossFitLibrary.Api.Controllers
     [Route("api/video")]
     public class VideoController : ControllerBase
     {
-        private readonly VideoManager _videoManager;
+        private readonly IFileManager _fileManagerLocal;
 
-        public VideoController(VideoManager videoManager)
+        public VideoController(IFileManager fileManagerLocal)
         {
-            _videoManager = videoManager;
+            _fileManagerLocal = fileManagerLocal;
         }
 
 
@@ -26,7 +27,7 @@ namespace CrossFitLibrary.Api.Controllers
         public IActionResult GetVideofile(string videoFileName)
         {
             
-            var video_path_during_dev = _videoManager.GetSavePath(videoFileName);
+            var video_path_during_dev = _fileManagerLocal.GetSavePath(videoFileName);
             if (string.IsNullOrEmpty(video_path_during_dev))
             {
                 return BadRequest();
@@ -40,26 +41,26 @@ namespace CrossFitLibrary.Api.Controllers
         { 
             // Returns temporary video file name to the client before conversion.
             // It helps identify the temp file to delete if the conversion fails or if the user cancels the upload"
-            return _videoManager.SaveTemporaryVideo(video);
+            return _fileManagerLocal.SaveTemporaryFile(video);
         }
         
         [HttpDelete("{videoFileName}")]
         public IActionResult DeleteTemporaryVideo(string videoFileName)
         {
             
-            if (!_videoManager.IsTemporaryFile(videoFileName))
+            if (!_fileManagerLocal.IsTemporaryFile(videoFileName))
             {
                 return BadRequest();
             }
 
             
             
-            if (!_videoManager.FileExists(videoFileName))
+            if (!_fileManagerLocal.FileExists(videoFileName))
             {
                 return NoContent();
             }
             
-            _videoManager.DeleteFile(videoFileName);
+            _fileManagerLocal.DeleteFile(videoFileName);
             
             return Ok();
         }

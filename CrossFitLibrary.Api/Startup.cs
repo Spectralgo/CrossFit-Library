@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Channels;
 using CrossFitLibrary.Api.BackgroundServices;
+using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 using CrossFitLibrary.Data;
 using IdentityModel;
 using IdentityServer4;
@@ -36,7 +37,7 @@ public class Startup
 
         services.AddHostedService<VideoEditingBackgroundService>()
             .AddSingleton(_ => Channel.CreateUnbounded<EditVideoChannelMessage>())
-            .AddSingleton<VideoManager>()
+            .AddSingleton<IFileManager, FileManagerLocal>()
             .AddCors(options =>
                 options.AddPolicy(AllCors, build => build
                     .AllowAnyHeader()
@@ -169,30 +170,5 @@ public class Startup
                     TrickingLibraryConstants.Roles.Mod);
             });
         });
-    }
-
-    public struct TrickingLibraryConstants
-    {
-        public struct Policies
-        {
-            public const string User = IdentityServerConstants.LocalApi.PolicyName;
-            public const string Mod = nameof(Mod);
-        }
-        
-        public struct IdentityResources
-        {
-            public const string RoleScope = "role";
-        }
-
-        public struct Claims
-        {
-            public const string Role = "role";
-        }
-        
-        public struct Roles
-        {
-            public const string Mod = nameof(Mod);
-        }
-        
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CrossFitLibrary.Api.BackgroundServices
+﻿namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing
 {
     public class EditVideoChannelMessage
     {

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using CrossFitLibrary.Api.BackgroundServices;
+using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 using CrossFitLibrary.Api.Form;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
@@ -35,13 +36,13 @@ namespace CrossFitLibrary.Api.Controllers
 
 
         [HttpPost]
-        [Authorize(Startup.TrickingLibraryConstants.Policies.User)]
+        [Authorize(TrickingLibraryConstants.Policies.User)]
         public async Task<IActionResult> Create(
             [FromBody] SubmissionForm submissionForm,
             [FromServices] Channel<EditVideoChannelMessage> channel,
-            [FromServices] VideoManager videoManager)
+            [FromServices] IFileManager fileManagerLocal)
         {
-            if (!videoManager.FileExists(submissionForm.VideoFileName))
+            if (!fileManagerLocal.FileExists(submissionForm.VideoFileName))
             {
                 return BadRequest();
             }

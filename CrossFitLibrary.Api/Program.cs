@@ -33,7 +33,7 @@ namespace CrossFitLibrary.Api
                     var mod = new IdentityUser("mod"){Email = "mod@test.com"};
                     userManager.CreateAsync(mod, "password").GetAwaiter().GetResult();
                     userManager
-                        .AddClaimAsync(mod, new Claim(Startup.TrickingLibraryConstants.Claims.Role, Startup.TrickingLibraryConstants.Roles.Mod))
+                        .AddClaimAsync(mod, new Claim(TrickingLibraryConstants.Claims.Role, TrickingLibraryConstants.Roles.Mod))
                         .GetAwaiter()
                         .GetResult();
                     

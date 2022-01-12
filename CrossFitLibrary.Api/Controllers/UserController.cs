@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using CrossFitLibrary.Api.BackgroundServices;
+using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +16,7 @@ using SixLabors.ImageSharp.Processing;
 namespace CrossFitLibrary.Api.Controllers;
 
 [Route("api/users")]
-[Authorize(Startup.TrickingLibraryConstants.Policies.User)]
+[Authorize(TrickingLibraryConstants.Policies.User)]
 public class UserController : ApiController
 {
     private readonly AppDbContext _ctx;
@@ -73,7 +74,7 @@ public class UserController : ApiController
     [HttpPut("me/image")]
     public async Task<IActionResult> ChangeUserAvatarImage(
         IFormFile imageFile,
-        [FromServices] VideoManager videoManager
+        [FromServices] IFileManager fileManager
         )
     {
         if (imageFile == null) return BadRequest();
@@ -84,8 +85,8 @@ public class UserController : ApiController
         var user = await _ctx.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
         if (user == null) return NoContent();
 
-        var fileName = VideoManager.GenerateImageFileName();
-        await using (var stream = System.IO.File.Create(videoManager.GetSavePath(fileName)))
+        var fileName = TrickingLibraryConstants.Files.GenerateImageFileName();
+        await using (var stream = System.IO.File.Create(fileManager.GetSavePath(fileName)))
         using (var imageProcessor = await Image.LoadAsync(imageFile.OpenReadStream()))
         {
             imageProcessor.Mutate(x => x.Resize(48, 48));
