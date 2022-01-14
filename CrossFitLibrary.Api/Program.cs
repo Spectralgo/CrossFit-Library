@@ -80,8 +80,8 @@ namespace CrossFitLibrary.Api
                         Description = "I'm just trying my best",
                         Video = new Video
                         {
-                            VideoLink = "one.mp4",
-                            ThumbnailLink = "one.jpg"
+                            VideoUrl = "one.mp4",
+                            ThumbnailUrl = "one.jpg"
                         },
                         VideoProcessed = true
                     });
@@ -93,8 +93,8 @@ namespace CrossFitLibrary.Api
                         Description = "best clean of all time",
                         Video = new Video
                         {
-                            VideoLink = "two.mp4",
-                            ThumbnailLink = "two.jpg"
+                            VideoUrl = "two.mp4",
+                            ThumbnailUrl = "two.jpg"
                         },
                         VideoProcessed = true
                     });

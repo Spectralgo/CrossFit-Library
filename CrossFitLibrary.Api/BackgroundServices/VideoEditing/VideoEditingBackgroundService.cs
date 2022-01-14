@@ -103,8 +103,8 @@ public class VideoEditingBackgroundService : BackgroundService
 
                     submission.Video = new Video
                     {
-                        VideoLink = _fileManagerLocal.GetFileUrl(output_video_name, FileType.Video),
-                        ThumbnailLink = _fileManagerLocal.GetFileUrl(output_thumbnail_name, FileType.Image) 
+                        VideoUrl = _fileManagerLocal.GetFileUrl(output_video_name, FileType.Video),
+                        ThumbnailUrl = _fileManagerLocal.GetFileUrl(output_thumbnail_name, FileType.Image) 
                     };
 
 

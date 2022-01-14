@@ -95,7 +95,7 @@ public class UserController : ApiController
             await imageProcessor.SaveAsync(stream, new JpegEncoder());
         }
 
-        user.Image = fileManager.GetFileUrl(imageFileName, FileType.Image) ;
+        user.ImageUrl = fileManager.GetFileUrl(imageFileName, FileType.Image) ;
         await _ctx.SaveChangesAsync();
         return Ok(user);
     }

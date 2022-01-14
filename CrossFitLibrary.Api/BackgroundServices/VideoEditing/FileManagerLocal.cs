@@ -72,16 +72,16 @@ namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing
 
         public async Task<string> SaveTemporaryFile(IFormFile file)
         {
-            var videoTemporaryFileName =
+            var temporaryFileName =
                 string.Concat(TempPrefix, DateTime.Now.Ticks, Path.GetExtension(file.FileName));
-            var savePath = TemporarySavePath(videoTemporaryFileName);
+            var savePath = TemporarySavePath(temporaryFileName);
 
             await using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write))
             {
                 await file.CopyToAsync(fileStream);
             }
 
-            return videoTemporaryFileName;
+            return temporaryFileName;
         }
 
         public string TemporarySavePath(string fileName)
