@@ -40,7 +40,7 @@ namespace CrossFitLibrary.Api.Controllers
         
         
         [HttpGet("mod")]
-        [Authorize(Policy = TrickingLibraryConstants.Policies.Mod)] 
+        [Authorize(Policy = CrossFitLibraryConstants.Policies.Mod)] 
         public string ModAuth()
         {
             return "Mod test";

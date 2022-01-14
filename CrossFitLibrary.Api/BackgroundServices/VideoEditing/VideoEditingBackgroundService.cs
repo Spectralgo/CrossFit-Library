@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.Settings;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,8 +44,8 @@ public class VideoEditingBackgroundService : BackgroundService
             
             var video_info = await _channelReader.ReadAsync(stoppingToken);
             var input_video_path = _fileManagerLocal.TemporarySavePath(video_info.VideoFileName);
-            var output_video_name = TrickingLibraryConstants.Files.GenerateConvertedVideoFileName();
-            var output_thumbnail_name = TrickingLibraryConstants.Files.GenerateThumbnailFileName(output_video_name);
+            var output_video_name = CrossFitLibraryConstants.Files.GenerateConvertedVideoFileName();
+            var output_thumbnail_name = CrossFitLibraryConstants.Files.GenerateThumbnailFileName(output_video_name);
             var output_video_path = _fileManagerLocal.TemporarySavePath(output_video_name);
             var output_thumbnail_path = _fileManagerLocal.TemporarySavePath(output_thumbnail_name);
             try
@@ -102,8 +103,8 @@ public class VideoEditingBackgroundService : BackgroundService
 
                     submission.Video = new Video
                     {
-                        VideoLink = output_video_name,
-                        ThumbnailLink = output_thumbnail_name
+                        VideoLink = _fileManagerLocal.GetFileUrl(output_video_name, FileType.Video),
+                        ThumbnailLink = _fileManagerLocal.GetFileUrl(output_thumbnail_name, FileType.Image) 
                     };
 
 

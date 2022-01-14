@@ -7,3 +7,9 @@ public class FileSettings
     public string Provider { get; set; }
     
 }
+
+public enum FileType
+{
+    Image,
+    Video
+}

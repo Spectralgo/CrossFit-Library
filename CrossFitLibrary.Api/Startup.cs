@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -19,10 +20,12 @@ namespace CrossFitLibrary.Api;
 public class Startup
 {
     private const string AllCors = "All";
+    private readonly IConfiguration _config;
     private readonly IWebHostEnvironment _env;
 
-    public Startup(IWebHostEnvironment env)
+    public Startup(IConfiguration config, IWebHostEnvironment env)
     {
+        _config = config;
         _env = env;
     }
 
@@ -37,7 +40,7 @@ public class Startup
 
         services.AddHostedService<VideoEditingBackgroundService>()
             .AddSingleton(_ => Channel.CreateUnbounded<EditVideoChannelMessage>())
-            .AddSingleton<IFileManager, FileManagerLocal>()
+            .AddFileManager(_config)
             .AddCors(options =>
                 options.AddPolicy(AllCors, build => build
                     .AllowAnyHeader()
@@ -74,7 +77,7 @@ public class Startup
         services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
-                
+
                 if (_env.IsDevelopment())
                 {
                     options.Password.RequireDigit = false;
@@ -104,22 +107,22 @@ public class Startup
         if (_env.IsDevelopment())
         {
             identityServerBuilder.AddInMemoryIdentityResources(new IdentityResource[]
-            { //scopes
+            {
+                //scopes
                 new IdentityResources.OpenId(), //user identification
                 new IdentityResources.Profile(), //user personal info
-                new IdentityResource(TrickingLibraryConstants.IdentityResources.RoleScope,
-                    new [] { TrickingLibraryConstants.Claims.Role})
+                new IdentityResource(CrossFitLibraryConstants.IdentityResources.RoleScope,
+                    new[] { CrossFitLibraryConstants.Claims.Role })
             });
 
             identityServerBuilder.AddInMemoryApiScopes(new ApiScope[]
             {
-                new ApiScope(IdentityServerConstants.LocalApi.ScopeName, new []
+                new ApiScope(IdentityServerConstants.LocalApi.ScopeName, new[]
                 {
                     JwtClaimTypes.PreferredUserName,
-                    TrickingLibraryConstants.Claims.Role
-                } )
+                    CrossFitLibraryConstants.Claims.Role
+                })
             });
-
 
 
             identityServerBuilder.AddInMemoryClients(new[]
@@ -129,12 +132,12 @@ public class Startup
                     ClientId = "crossfit-library-client",
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = new[] 
-                    { 
+                    RedirectUris = new[]
+                    {
                         "https://localhost:3000/oidc/sign-in-callback.html",
                         "https://localhost:3000/oidc/sign-in-silent-callback.html"
                     },
-                    
+
                     PostLogoutRedirectUris = new[] { "https://localhost:3000" },
                     AllowedCorsOrigins = new[] { "https://localhost:3000" },
 
@@ -143,7 +146,7 @@ public class Startup
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.LocalApi.ScopeName,
-                        TrickingLibraryConstants.IdentityResources.RoleScope
+                        CrossFitLibraryConstants.IdentityResources.RoleScope
                     },
 
                     RequirePkce = true,
@@ -152,9 +155,8 @@ public class Startup
                     RequireClientSecret = false
                 }
             });
-            
-            
-            
+
+
             identityServerBuilder.AddDeveloperSigningCredential();
         }
 
@@ -162,12 +164,12 @@ public class Startup
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(TrickingLibraryConstants.Policies.Mod, policy =>
+            options.AddPolicy(CrossFitLibraryConstants.Policies.Mod, policy =>
             {
                 var is4Policy = options.GetPolicy(IdentityServerConstants.LocalApi.PolicyName);
                 policy.Combine(is4Policy);
-                policy.RequireClaim(TrickingLibraryConstants.Claims.Role,
-                    TrickingLibraryConstants.Roles.Mod);
+                policy.RequireClaim(CrossFitLibraryConstants.Claims.Role,
+                    CrossFitLibraryConstants.Roles.Mod);
             });
         });
     }

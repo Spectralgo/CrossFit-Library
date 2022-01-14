@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
+using CrossFitLibrary.Api.Settings;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,7 @@ using SixLabors.ImageSharp.Processing;
 namespace CrossFitLibrary.Api.Controllers;
 
 [Route("api/users")]
-[Authorize(TrickingLibraryConstants.Policies.User)]
+[Authorize(CrossFitLibraryConstants.Policies.User)]
 public class UserController : ApiController
 {
     private readonly AppDbContext _ctx;
@@ -85,8 +86,8 @@ public class UserController : ApiController
         var user = await _ctx.Users.FirstOrDefaultAsync(x => x.Id.Equals(userId));
         if (user == null) return NoContent();
 
-        var fileName = TrickingLibraryConstants.Files.GenerateImageFileName();
-        await using (var stream = System.IO.File.Create(fileManager.GetSavePath(fileName)))
+        var imageFileName = CrossFitLibraryConstants.Files.GenerateImageFileName();
+        await using (var stream = System.IO.File.Create(fileManager.GetSavePath(imageFileName)))
         using (var imageProcessor = await Image.LoadAsync(imageFile.OpenReadStream()))
         {
             imageProcessor.Mutate(x => x.Resize(48, 48));
@@ -94,7 +95,7 @@ public class UserController : ApiController
             await imageProcessor.SaveAsync(stream, new JpegEncoder());
         }
 
-        user.Image = fileName;
+        user.Image = fileManager.GetFileUrl(imageFileName, FileType.Image) ;
         await _ctx.SaveChangesAsync();
         return Ok(user);
     }

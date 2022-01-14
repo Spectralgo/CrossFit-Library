@@ -36,7 +36,7 @@ namespace CrossFitLibrary.Api.Controllers
 
 
         [HttpPost]
-        [Authorize(TrickingLibraryConstants.Policies.User)]
+        [Authorize(CrossFitLibraryConstants.Policies.User)]
         public async Task<IActionResult> Create(
             [FromBody] SubmissionForm submissionForm,
             [FromServices] Channel<EditVideoChannelMessage> channel,

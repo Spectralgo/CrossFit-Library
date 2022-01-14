@@ -1,27 +1,45 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.Settings;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing
 {
     // Todo: Chose to make a FileManager or an ImageManager but do not let images processing live here
     public class FileManagerLocal : IFileManager
     {
+        private readonly IOptionsMonitor<FileSettings> _fileSettingsMonitor;
         private readonly IWebHostEnvironment _env;
         
 
-        public FileManagerLocal(IWebHostEnvironment env)
+        public FileManagerLocal(
+            IOptionsMonitor<FileSettings> fileSettingsMonitor,
+            IWebHostEnvironment env)
         {
+            _fileSettingsMonitor = fileSettingsMonitor;
             _env = env;
         }
 
-        private static string TempPrefix => TrickingLibraryConstants.Files.TempPrefix;
+        private static string TempPrefix => CrossFitLibraryConstants.Files.TempPrefix;
         private string WorkingDirectory => _env.WebRootPath;
         public string GetFFmpegPath() => Path.Combine(_env.ContentRootPath, "ffmpeg", "ffmpeg.exe");
-        
+        public string GetFileUrl(string fileName, FileType fileType)
+        {
+            // This logic is implemented to let the program resolve the environment settings at startup (dev or prod)
+            // The Urls to resolve will be determined by the provider given in the settings. (S3 or local)
+            var settings = _fileSettingsMonitor.CurrentValue;
+            return fileType switch
+            {
+                FileType.Image => $"{settings.ImageUrl}/{fileName}",
+                FileType.Video => $"{settings.VideoUrl}/{fileName}",
+                _ => throw new ArgumentException(nameof(fileType))
+            };
+        }
+
 
         public bool IsTemporaryFile(string fileName)
         {
@@ -47,7 +65,7 @@ namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing
 
         public string GetSavePath(string fileName)
         {
-            return _env.IsProduction() ? null : Path.Combine(WorkingDirectory, fileName);
+            return Path.Combine(WorkingDirectory, fileName);
         }
 
 
