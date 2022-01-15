@@ -34,7 +34,7 @@ export const actions = {
     // we need to monitor if the upload is completed
     // the source object contains a token that we can use to cancel the upload
     const source = this.$axios.CancelToken.source()
-    const uploadPromise = this.$axios.post("/api/video", form, {
+    const uploadPromise = this.$axios.post("/api/files", form, {
       cancelToken: source.token,
       progress: false}
     ).then(({data}) => {
@@ -56,7 +56,7 @@ export const actions = {
       if (state.uploadCompleted){
         commit('hide')
         const videoFileName = await state.uploadPromise
-        await this.$axios.delete("/api/video/" + videoFileName );
+        await this.$axios.delete("/api/files/" + videoFileName );
       }else{
         state.uploadCancelSource.cancel()
       }

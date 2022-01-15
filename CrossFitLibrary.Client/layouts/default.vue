@@ -19,8 +19,8 @@
             <v-menu offset-y v-if="authenticated">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
-                  <v-avatar v-if="profile.image" size="36">
-                    <img :src="`https://localhost:5001/api/video/${profile.image}`" alt="profile image"/>
+                  <v-avatar v-if="profile.imageUrl" size="36">
+                    <img :src="`${profile.imageUrl}`" alt="profile image"/>
                   </v-avatar>
                   <v-icon v-else >mdi-account-circle</v-icon>
                 </v-btn>

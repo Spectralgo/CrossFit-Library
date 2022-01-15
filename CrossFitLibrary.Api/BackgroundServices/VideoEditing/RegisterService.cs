@@ -23,11 +23,11 @@ public static class RegisterService
         // You need this to make it an injectable option object
         services.Configure<FileSettings>(settingsSection);
 
-        if (settings.Provider.Equals(CrossFitLibraryConstants.Files.Providers.Local))
+        if (settings.Provider.Equals(CrossFitLibraryConstants.Files.Providers.Local, StringComparison.InvariantCultureIgnoreCase))
         {
             services.AddSingleton<IFileManager, FileManagerLocal>();
         }
-        else if(settings.Provider.Equals(CrossFitLibraryConstants.Files.Providers.S3))
+        else if(settings.Provider.Equals(CrossFitLibraryConstants.Files.Providers.S3, StringComparison.InvariantCultureIgnoreCase))
         {
             throw new NotImplementedException();
         }
