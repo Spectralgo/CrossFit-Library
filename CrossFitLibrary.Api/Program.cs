@@ -37,26 +37,53 @@ public class Program
                     .GetAwaiter()
                     .GetResult();
 
-                ctx.Add(new Difficulty { Slug = "easy", Name = "Easy", Description = "Super easy to do test" });
-                ctx.Add(new Difficulty { Slug = "hard", Name = "Hard", Description = "Hard Test" });
+                ctx.Add(new Difficulty
+                {
+                    Slug = "easy",
+                    Name = "Easy",
+                    Active = true,
+                    Version = 1,
+                    Description = "Super easy to do test"
+                });
+                ctx.Add(new Difficulty
+                    { Slug = "hard", Name = "Hard", Active = true, Version = 1, Description = "Hard Test" });
 
                 ctx.Add(new Category
-                    { Slug = "gym", Name = "Gym", Description = "This Gym Test" });
+                    { Slug = "gym", Name = "Gym", Active = true, Version = 1, Description = "This Gym Test" });
                 ctx.Add(new Category
-                    { Slug = "weight-lifting", Name = "Weight Lifting", Description = "This is heavy shit test" });
+                {
+                    Slug = "weight-lifting",
+                    Name = "Weight Lifting",
+                    Active = true,
+                    Version = 1,
+                    Description = "This is heavy shit test"
+                });
                 ctx.Add(new Category
-                    { Slug = "conditioning", Name = "Conditioning", Description = "You will suffer test" });
+                {
+                    Slug = "conditioning",
+                    Name = "Conditioning",
+                    Active = true,
+                    Version = 1,
+                    Description = "You will suffer test"
+                });
 
                 ctx.Add(new Trick
                 {
-                    Slug = "snatch", Name = "Snatch", Active = true, Version = 1,
-                    Description = "Snatch is from the floor to the overhead test", Difficulty = "easy",
+                    Slug = "snatch",
+                    Name = "Snatch",
+                    Active = true,
+                    Version = 1,
+                    Description = "Snatch is from the floor to the overhead test",
+                    Difficulty = "easy",
                     TrickCategories = new List<TrickCategory>
                         { new() { CategoryId = "gym" }, new() { CategoryId = "weight-lifting" } }
                 });
                 ctx.Add(new Trick
                 {
-                    Slug = "clean", Name = "Clean", Active = true, Version = 1,
+                    Slug = "clean",
+                    Name = "Clean",
+                    Active = true,
+                    Version = 1,
                     Description = "Pull the bar from the floor to your shoulders",
                     Difficulty = "easy",
                     TrickCategories = new List<TrickCategory>
@@ -64,8 +91,12 @@ public class Program
                 });
                 ctx.Add(new Trick
                 {
-                    Slug = "clean-and-jerk", Name = "Clean and jerk", Active = true, Version = 1,
-                    Description = "A clean with a finish overhead", Difficulty = "hard",
+                    Slug = "clean-and-jerk",
+                    Name = "Clean and jerk",
+                    Active = true,
+                    Version = 1,
+                    Description = "A clean with a finish overhead",
+                    Difficulty = "hard",
                     TrickCategories = new List<TrickCategory>
                         { new() { CategoryId = "conditioning" }, new() { CategoryId = "weight-lifting" } },
                     Prerequisites = new List<TrickRelationship>
@@ -76,7 +107,9 @@ public class Program
 
                 ctx.Add(new Submission
                 {
-                    UserId = testUser.Id, Active = true, Version = 1,
+                    UserId = testUser.Id,
+                    Active = true,
+                    Version = 1,
                     TrickId = "snatch",
                     Description = "I'm just trying my best",
                     Video = new Video
@@ -88,7 +121,9 @@ public class Program
                 });
                 ctx.Add(new Submission
                 {
-                    UserId = testUser.Id, Active = true, Version = 1,
+                    UserId = testUser.Id,
+                    Active = true,
+                    Version = 1,
                     TrickId = "clean",
                     Description = "best clean of all time",
                     Video = new Video
@@ -100,14 +135,16 @@ public class Program
                 });
                 ctx.Add(new ModerationItem
                     {
-                        Active = true, Version = 1,
+                        Active = true,
+                        Version = 1,
                         Target = "snatch",
                         Type = ModerationItemTypes.Trick
                     }
                 );
                 ctx.Add(new Comment
                 {
-                    Active = true, Version = 1,
+                    Active = true,
+                    Version = 1,
                     Content = "This is a comment, I hope it works, I'm just trying to see if it works",
                     HtmlContent = "This is a comment, I hope it works, I'm just trying to see if it works",
                     ModerationItemId = 1,
@@ -115,7 +152,8 @@ public class Program
                 });
                 ctx.Add(new Comment
                 {
-                    Active = true, Version = 1,
+                    Active = true,
+                    Version = 1,
                     Content = "A comment related to a trick",
                     HtmlContent = "A comment related to a trick",
                     TrickId = "snatch",

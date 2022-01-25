@@ -10,9 +10,9 @@ namespace CrossFitLibrary.Models
         public string Description { get; set; }
         public string Difficulty { get; set; }
 
-        public IList<TrickRelationship> Prerequisites { get; set; }
-        public IList<TrickRelationship> Progressions { get; set; }
-        public IList<TrickCategory> TrickCategories { get; set; }
+        public IList<TrickRelationship> Prerequisites { get; set; } = new List<TrickRelationship>();
+        public IList<TrickRelationship> Progressions { get; set; } = new List<TrickRelationship>();
+        public IList<TrickCategory> TrickCategories { get; set; } = new List<TrickCategory>();
         public IList<Comment> Comments { get; set; } = new List<Comment>();
     }
 }
