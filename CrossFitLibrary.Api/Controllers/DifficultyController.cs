@@ -28,7 +28,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet("{id}")]
         public Difficulty Get(string id)
         {
-            return _ctx.Difficulties.FirstOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
+            return _ctx.Difficulties.FirstOrDefault(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase));
         }
 
         [HttpGet("{id}/tricks")]
@@ -41,7 +41,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost]
         public async Task<Difficulty> Create([FromBody] Difficulty difficulty)
         {
-            difficulty.Id = difficulty.Name.Replace(" ", "-").ToLowerInvariant();
+            difficulty.Slug = difficulty.Name.Replace(" ", "-").ToLowerInvariant();
             _ctx.Add(difficulty);
             await _ctx.SaveChangesAsync();
             return difficulty;

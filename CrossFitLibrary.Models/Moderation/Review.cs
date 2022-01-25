@@ -1,7 +1,10 @@
-﻿namespace CrossFitLibrary.Models.Moderation
+﻿using CrossFitLibrary.Models.Abstractions;
+
+namespace CrossFitLibrary.Models.Moderation
 {
-    public class Review : BaseModel<int>
+    public class Review : PersistentModel
     {
+        public int Id { get; set; }
         public int ModerationItemId { get; set; }
         public ModerationItem ModerationItem { get; set; }
         

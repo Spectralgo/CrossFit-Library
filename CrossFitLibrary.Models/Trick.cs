@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
+using CrossFitLibrary.Models.Abstractions;
 
 namespace CrossFitLibrary.Models
 {
-    public class Trick : BaseModel<string>, ICommentable
+    public class Trick : SlugModel, ICommentable
     {
-
-        // from BaseModel
-        // string Id  
-        // bool Deleted
 
         public string Name { get; set; }
         public string Description { get; set; }

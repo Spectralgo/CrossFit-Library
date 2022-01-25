@@ -49,6 +49,10 @@ namespace CrossFitLibrary.Data
                 .HasOne(x => x.Prerequisite)
                 .WithMany(x => x.Progressions)
                 .HasForeignKey(x => x.PrerequisiteId);
+
+            modelBuilder.Entity<Trick>().HasKey(x => new { x.Slug, x.Version });
+            modelBuilder.Entity<Category>().HasKey(x => new { x.Slug, x.Version });
+            modelBuilder.Entity<Difficulty>().HasKey(x => new { x.Slug, x.Version });
         }
     }
 }

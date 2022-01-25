@@ -51,7 +51,7 @@ namespace CrossFitLibrary.Api.Controllers
         public object Get(string id)
         {
             return _ctx.Tricks
-                .Where(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase))
                 .Select(TrickViewModels.Projection)
                 .FirstOrDefault();
         }
@@ -70,7 +70,9 @@ namespace CrossFitLibrary.Api.Controllers
         {
             var trick = new Trick
             {
-                Id = trickForm.Name.Replace(" ", "-").ToLowerInvariant(),
+                Slug = trickForm.Name.Replace(" ", "-").ToLowerInvariant(),
+                Version = 1,
+                Active = true,
                 Name = trickForm.Name,
                 Description = trickForm.Description,
                 Difficulty = trickForm.Difficulty,
@@ -88,7 +90,7 @@ namespace CrossFitLibrary.Api.Controllers
         public async Task<object> Update([FromBody] Trick trick)
 
         {
-            if (string.IsNullOrEmpty(trick.Id))
+            if (string.IsNullOrEmpty(trick.Slug))
             {
                 return null;
             }
@@ -102,7 +104,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(string id)
         {
-            var trick = _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id));
+            var trick = _ctx.Tricks.FirstOrDefault(x => x.Slug.Equals(id));
             trick.Deleted = true;
             return Ok();
         }

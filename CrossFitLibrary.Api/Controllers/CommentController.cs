@@ -73,7 +73,7 @@ namespace CrossFitLibrary.Api.Controllers
         public async Task<IActionResult> CreateCommentForTrick(string id, [FromBody] Comment newComment)
         {
             // this is  the trick we are adding a reply to
-            var trick = _ctx.Tricks.FirstOrDefault(x => x.Id.Equals(id) );
+            var trick = _ctx.Tricks.FirstOrDefault(x => x.Slug.Equals(id) );
 
             if (trick == null)
             {

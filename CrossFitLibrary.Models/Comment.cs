@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Security.Principal;
+using CrossFitLibrary.Models.Abstractions;
 using CrossFitLibrary.Models.Moderation;
 
 namespace CrossFitLibrary.Models
 {
-    public class Comment: BaseModel<int>
+    public class Comment: VersionedModel
     {
+        public int Id { get; set; }
         public string Content { get; set; }
         public string HtmlContent { get; set; }
         public int Likes { get; set; } // Todo: implement likes in the comment component

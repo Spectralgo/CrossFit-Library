@@ -1,6 +1,8 @@
-﻿namespace CrossFitLibrary.Models
+﻿using CrossFitLibrary.Models.Abstractions;
+
+namespace CrossFitLibrary.Models
 {
-    public class TrickCategory : BaseModel<string>
+    public class TrickCategory 
     {
         public string TrickId { get; set; }
         public Trick Trick { get; set; }
