@@ -4,11 +4,9 @@ namespace CrossFitLibrary.Models
 {
     public class TrickCategory 
     {
-        public int TrickVersion { get; set; }
-        public int CategoryVersion { get; set; }
-        public string TrickId { get; set; }
         public Trick Trick { get; set; }
-        public string CategoryId { get; set; }
+        public int TrickId { get; set; }
         public Category Category { get; set; }
+        public int CategoryId { get; set; }
     }
 };

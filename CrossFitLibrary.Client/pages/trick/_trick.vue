@@ -3,8 +3,8 @@
     <template v-slot:content>
       <div v-if="submissions">
         <div v-for="x in 1">
-          <v-card v-for="s in submissions" :key="`${x}-${trick.id}-${s.id}`" class="my-2" >
-            <VideoPlayer :key="`v-${x}-${trick.id}-${s.id}`" :video="s.video"/>
+          <v-card v-for="s in submissions" :key="`${x}-${trick.slug}-${s.id}`" class="my-2" >
+            <VideoPlayer :key="`v-${x}-${trick.slug}-${s.id}`" :video="s.video"/>
             <v-card-text>
               {{ s.description }}
             </v-card-text>
@@ -12,11 +12,11 @@
         </div>
       </div>
     </template>
-    <template v-slot:item>
+    <template v-slot:item="{close}">
       <div v-if="trick">
         <div class="text-h6">Trick: {{ trick.name }}
           <span class="ml-2">
-          <v-chip :to="`/difficulty/${difficulty.id}`" small>
+          <v-chip :to="`/difficulty/${difficulty.slug}`" small>
             {{ difficulty.name }}
           </v-chip>
         </span>
@@ -33,14 +33,20 @@
           </v-chip-group>
         </div>
       </div>
+      <v-divider class="my-1"></v-divider>
+      <div>
+        <v-btn @click="edit(); close();" outlined small>edit</v-btn>
+      </div>
+
     </template>
   </ItemContentLayout>
 </template>
 
 <script>
-import {mapGetters, mapState} from 'vuex';
+import {mapGetters, mapMutations, mapState} from 'vuex';
 import VideoPlayer from '../../components/video-player';
 import ItemContentLayout from '../../components/item-content-layout';
+import TrickSteps from "@/components/content-creation/trick-steps";
 
 export default {
   components: {
@@ -48,32 +54,43 @@ export default {
     ItemContentLayout,
   },
   data: () => ({
+
     trick: null,
     difficulty: null,
   }),
+  methods: {
+    ...mapMutations("video-upload", ["activate"]),
+    edit() {
+  this.activate({
+    component: TrickSteps,
+    edit: true,
+    editPayload: this.trick
+  })
+    }
+  },
   computed: {
     ...mapGetters('tricks', ['trickById', "difficultyById"]),
     ...mapState('submissions', ['submissions']),
-    ...mapState('tricks', ['categories', 'tricks']),
+    ...mapState('tricks', ['difficulties','categories', 'tricks']),
     relatedData() {
       return [
         {
           title: "Categories",
-          data: this.categories.filter(x => this.trick.categories.indexOf(x.id) >= 0),
-          idFactory: c => `category-${c.id}`,
-          routeFactory: c => `/category/${c.id}`,
+          data: this.categories.filter(x => this.trick.categories.indexOf(x.slug) >= 0),
+          idFactory: c => `category-${c.slug}`,
+          routeFactory: c => `/category/${c.slug}`,
         },
         {
           title: "Prerequisites",
-          data: this.tricks.filter(x => this.trick.prerequisites.indexOf(x.id) >= 0),
-          idFactory: t => `trick-${t.id}`,
-          routeFactory: t => `/trick/${t.id}`,
+          data: this.tricks.filter(x => this.trick.prerequisites.indexOf(x.slug) >= 0),
+          idFactory: t => `trick-${t.slug}`,
+          routeFactory: t => `/trick/${t.slug}`,
         },
         {
           title: "Progressions",
-          data: this.tricks.filter(x => this.trick.progressions.indexOf(x.id) >= 0),
-          idFactory: t => `trick-${t.id}`,
-          routeFactory: t => `/trick/${t.id}`,
+          data: this.tricks.filter(x => this.trick.progressions.indexOf(x.slug) >= 0),
+          idFactory: t => `trick-${t.slug}`,
+          routeFactory: t => `/trick/${t.slug}`,
         },
       ]
     },
@@ -83,6 +100,8 @@ export default {
     this.trick = this.trickById(this.$route.params.trick)
     this.difficulty = this.difficultyById(this.trick.difficulty)
     await this.$store.dispatch("submissions/fetchSubmissionsForTrick", {trickId}, {root: true});
+    console.log("this difficulty:",this.difficulty)
+    console.log("this trick:",this.trick)
   },
   head() {
     if (!this.trick) return {}

@@ -29,30 +29,18 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet]
         public IEnumerable<object> All()
         {
-            // todo add filter to only send active tricks and latest version
-            return _ctx.Tricks.Select(TrickViewModels.Projection).ToList();
+            return _ctx.Tricks
+                .Where(x => x.Active == true)
+                .Select(TrickViewModels.Projection).ToList();
         }
-        
-        [HttpGet("test")]
-        [Authorize(Policy = IdentityServerConstants.LocalApi.PolicyName )] 
-        public string TestAuth()
-        {
-            return "test";
-        }
-        
-        
-        [HttpGet("mod")]
-        [Authorize(Policy = CrossFitLibraryConstants.Policies.Mod)] 
-        public string ModAuth()
-        {
-            return "Mod test";
-        }
-        
+
 
         [HttpGet("{id}")]
         public object Get(string id)
         {
+            //todo: Console.log out the object in the vue app to see the projection
             return _ctx.Tricks
+                .Where(x => x.Active == true)
                 .Where(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase))
                 .Select(TrickViewModels.Projection)
                 .FirstOrDefault();
@@ -74,60 +62,65 @@ namespace CrossFitLibrary.Api.Controllers
             {
                 Slug = trickForm.Name.Replace(" ", "-").ToLowerInvariant(),
                 Version = 1,
-                Active = true, 
+                Active = false,
                 Name = trickForm.Name,
                 Description = trickForm.Description,
                 Difficulty = trickForm.Difficulty,
                 TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList(),
-                Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x }).ToList(),
+                Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x })
+                    .ToList(),
                 Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
             };
 
-            _ctx.Add(new ModerationItem { Target = trick.Slug, VersionTarget = trick.Version });
             _ctx.Add(trick);
+            await _ctx.SaveChangesAsync();
+            
+            _ctx.Add(new ModerationItem
+            {
+                Target = trick.Id,
+                Type = ModerationItemTypes.Trick
+            });
+
             await _ctx.SaveChangesAsync();
             return TrickViewModels.Create(trick);
         }
 
-        [HttpPut]
         public async Task<IActionResult> Update([FromBody] TrickForm trickForm)
         {
-
-            
-            // We want to keep the old version
-            var newTrick = new Trick
-            {
-                Slug = trickForm.Name.Replace(" ", "-").ToLowerInvariant(),
-                Name = trickForm.Name,
-                Description = trickForm.Description,
-                Difficulty = trickForm.Difficulty,
-                TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList(),
-                Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x }).ToList(),
-                Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
-            };
-            
-            // Checking if the trick exist in the database
             var trick = _ctx.Tricks
-                .FirstOrDefault(x => x.Slug.Equals(newTrick.Slug, StringComparison.InvariantCultureIgnoreCase));
-            if (trick == null)
+                .FirstOrDefault(x => x.Id == trickForm.Id);
+            
+            if (trick == null) 
             {
                 return NoContent();
             }
-            
-            // Looking for the latest version
-            var trickVersion = _ctx.Tricks
-                .Where(x => x.Slug.Equals(newTrick.Slug, StringComparison.InvariantCultureIgnoreCase))
-                .LatestVersion(); // Custom static method from QueryExtension.cs in data CrossFitLibrary.Data project
-            
-            
-            
-            // Incrementing the latest version & adding the new trick to the moderation list
-            newTrick.Version = trickVersion + 1;
+
+            var newTrick = new Trick 
+            {
+                Slug = trick.Slug,
+                Name = trick.Name,
+                Version = trick.Version + 1,
+                Description = trickForm.Description,
+                Difficulty = trickForm.Difficulty,
+                TrickCategories = trickForm.Categories.Select(x => new TrickCategory { CategoryId = x }).ToList(),
+                Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x })
+                    .ToList(),
+                Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
+            };
+
+
             _ctx.Add(newTrick);
-            _ctx.Add(new ModerationItem { Target = newTrick.Slug, VersionTarget = newTrick.Version });
             await _ctx.SaveChangesAsync();
             
-            // todo redirect to the mod item istead of returning the trick
+            _ctx.Add(new ModerationItem
+            {
+                Current = trick.Id,
+                Target = newTrick.Id,
+                Type = ModerationItemTypes.Trick
+            });
+            
+            await _ctx.SaveChangesAsync();
+
             return Ok(TrickViewModels.Create(newTrick));
         }
 

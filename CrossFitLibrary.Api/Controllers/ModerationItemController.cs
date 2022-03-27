@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CrossFitLibrary.Api.Form;
 using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using CrossFitLibrary.Models.Moderation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CrossFitLibrary.Api.Controllers
 {
@@ -24,13 +26,21 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet]
         public IEnumerable<ModerationItem> All()
         {
-            return _ctx.ModerationItems.ToList();
+            return _ctx.ModerationItems
+                .Where(x => x.Deleted == false)
+                .ToList();
         }
 
         [HttpGet("{id}")]
-        public ModerationItem Get(int id)
+        public object Get(int id)
         {
-            return _ctx.ModerationItems.FirstOrDefault(x => x.Id.Equals(id));
+            return _ctx.ModerationItems
+                .Include(x => x.Comments)
+                .Include(x => x.Reviews)
+                .Where(x => x.Id.Equals(id))
+                .Select(ModerationItemViewModels.Projection)
+                .FirstOrDefault();
+
         }
 
 
@@ -62,7 +72,7 @@ namespace CrossFitLibrary.Api.Controllers
                     tag,
                     $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
             }
-
+            
 
             _ctx.Add(comment);
             await _ctx.SaveChangesAsync();
@@ -80,18 +90,46 @@ namespace CrossFitLibrary.Api.Controllers
         }
 
         [HttpPost("{id}/reviews")]
-        public async Task<IActionResult> AddReview(int id, [FromBody] Review review)
+        public async Task<IActionResult> AddReview(
+            int id,
+            [FromBody] ReviewForm reviewForm,
+            [FromServices] VersionMigrationContext migrationContext )
         {
 
+            var modItem = _ctx.ModerationItems
+                .Include(x => x.Reviews)
+                .FirstOrDefault(x => x.Id == id);
+            
             // Be sure the moderationItem exists
-            if (!_ctx.ModerationItems.Any(x => x.Id == id))
+            if (modItem == null)
             {
                 return NoContent();
             }
+
+            if (modItem.Deleted)
+            {
+                return BadRequest("Moderation item no longer exists.");
+            }
+
+            // TODO: make this async safe
+            // because if two reviews comes at the same time the review count will only amount to 2
+            var review = new Review
+            {
+                ModerationItemId = id,
+                Comment = reviewForm.Comment,
+                Status = reviewForm.Status
+            };
             
-            review.ModerationItemId = id; // ? It might be already set in the frontend (FRenard 2021-12-13)
+            _ctx.Add(review); // Same as doing this _ctx.Reviews.Add(review)
+
             
-            _ctx.Add(review); // Is it the same as doing this _ctx.Reviews.Add(review)
+            // TODO: use configuration replace the magic '3'
+            if (modItem.Reviews.Count >= 3)
+            {
+                 migrationContext.Migrate(modItem);
+                 modItem.Deleted = true;
+            }
+            
             await _ctx.SaveChangesAsync();
             return Ok(ReviewViewModel.Create(review));
         }

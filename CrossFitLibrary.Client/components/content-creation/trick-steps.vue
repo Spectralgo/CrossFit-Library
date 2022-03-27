@@ -19,21 +19,22 @@
 
         <v-stepper-items class="fmb-1-for-btn">
 
-          <v-stepper-content  step="1">
+          <v-stepper-content step="1">
             <div>
               <v-text-field v-model="form.name" label="Tricking Name"></v-text-field>
               <v-text-field v-model="form.description" label="Description"></v-text-field>
 
-              <v-select :items="difficultyItems" label="Difficulty" @change="selectDifficulty"></v-select>
+              <v-select v-model="form.difficulty" :items="difficultyItems" label="Difficulty"
+                        @change="selectDifficulty"></v-select>
 
-              <v-select :items="categoryItems" chips deletable-chips label="Categories" multiple small-chips
-                        @change="selectCategories"></v-select>
+              <v-select v-model="form.categories" :items="categoryItems" chips deletable-chips label="Categories"
+                        multiple small-chips @change="selectCategories"></v-select>
 
-              <v-select :items="trickItems" chips deletable-chips label="Prerequisites" multiple
-                        small-chips @change="selectPrerequisites"></v-select>
+              <v-select v-model="form.prerequisites" :items="trickItems" chips deletable-chips label="Prerequisites"
+                        multiple small-chips @change="selectPrerequisites"></v-select>
 
-              <v-select :items="trickItems" chips deletable-chips label="Progressions" multiple small-chips
-                        @change="selectProgressions"></v-select>
+              <v-select v-model="form.progressions" :items="trickItems" chips deletable-chips label="Progressions"
+                        multiple small-chips @change="selectProgressions"></v-select>
 
               <div class="d-flex justify-center">
                 <v-btn @click="step++">Next</v-btn>
@@ -41,7 +42,7 @@
             </div>
           </v-stepper-content>
 
-          <v-stepper-content  step="2">
+          <v-stepper-content step="2">
             <div>
               <v-btn @click="save">Save</v-btn>
             </div>
@@ -54,34 +55,43 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations} from 'vuex';
+import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
 import {close} from "@/components/content-creation/_shared";
 
 export default {
   name: "trick-steps",
   mixins: [close],
   data: () => ({
-      form: {
-        name: "",
-        description: "",
-        difficulty: "",
-        prerequisites: [],
-        progressions: [],
-        categories: [],
-      },
-      submission: "",
-      step: 1,
-    })
+    form: {
+      name: "",
+      description: "",
+      difficulty: "",
+      prerequisites: [],
+      progressions: [],
+      categories: [],
+    },
+    submission: "",
+    step: 1,
+  })
   ,
+  created() {
+    if (this.editing) {
+      Object.assign(this.form, this.editPayload)
+      console.log("form", this.form)
+    }
+  },
   computed: {
+    ...mapState('video-upload', ["editing", "editPayload"]),
     ...mapGetters('tricks', ['trickItems', 'categoryItems', 'difficultyItems']),
   },
   methods: {
-    ...mapActions('tricks', ['createTrick']),
+    ...mapActions('tricks', ['createTrick', 'updateTrick']),
     async save() {
-      await this.createTrick({
-        form: this.form
-      });
+      if (this.editing) {
+        await this.updateTrick({ form: this.form});
+      } else {
+        await this.createTrick({form: this.form});
+      }
       this.close();
     },
     selectDifficulty(item) {

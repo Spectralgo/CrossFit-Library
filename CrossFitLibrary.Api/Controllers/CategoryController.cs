@@ -33,11 +33,11 @@ namespace CrossFitLibrary.Api.Controllers
         }
 
         [HttpGet("{id}/tricks")]
-        public IEnumerable<Trick> ListCategoryTricks(string id)
+        public IEnumerable<Trick> ListCategoryTricks(int id)
         {
             var result = _ctx.TrickCategories
                 .Include(x => x.Trick)
-                .Where(x => x.CategoryId.Equals(id, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => x.CategoryId == id)
                 .Select(x => x.Trick).ToList();
             return result;
         }

@@ -9,7 +9,7 @@
         <p class="text-h5">{{ s.title }}</p>
         <div>
           <v-card class="mx-auto my-2"
-                  max-width="400" v-for="item in s.collection" :key="`${s.title}-${item.id}`" :to="s.routeFactory(item.id)"
+                  max-width="400" v-for="item in s.collection" :key="`${s.title}-${item.slug}`" :to="s.routeFactory(item.slug)"
                   >
             <v-img gradient="to right, rgba(030,035,038,.93), rgba(25,32,72,.3)" class="white--text justify-center align-center" height="200px"
                    src="https://wodinn.com/wp-content/uploads/2020/03/Matt-Fraser-Snatch-Squat-Athl%C3%A8te-Crossfit-1024x576.jpg">

@@ -14,7 +14,7 @@ namespace CrossFitLibrary.Api.ViewModels
         {
             review.Id,
             review.ModerationItemId,
-            review.ReviewComment,
+            review.Comment,
             review.Status
         };
     }

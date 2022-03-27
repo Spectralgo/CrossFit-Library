@@ -9,7 +9,6 @@ namespace CrossFitLibrary.Models
 {
     public class Comment: VersionedModel
     {
-        public int Id { get; set; }
         public string Content { get; set; }
         public string HtmlContent { get; set; }
         public int Likes { get; set; } // Todo: implement likes in the comment component

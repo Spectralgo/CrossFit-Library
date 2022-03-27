@@ -6,7 +6,6 @@ namespace CrossFitLibrary.Models
 {
     public class Submission : VersionedModel, ICommentable
     {
-        public int Id { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
         public string TrickId { get; set; }

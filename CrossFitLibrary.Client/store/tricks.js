@@ -8,20 +8,20 @@ export const state = initState;
 
 // Allow us to build new data from state values
 export const getters = {
-  trickById: state => id => state.tricks.find(trick => trick.id === id),
-  categoryById: state => id => state.categories.find(category => category.id === id),
-  difficultyById: state => id => state.difficulties.find(difficulty => difficulty.id === id),
+  trickById: state => id => state.tricks.find(trick => trick.slug === id),
+  categoryById: state => id => state.categories.find(category => category.slug === id),
+  difficultyById: state => id => state.difficulties.find(difficulty => difficulty.slug === id),
   trickItems: state => state.tricks.map(x => ({
     text: x.name,
-    value: x.id
+    value: x.slug
   })),
   categoryItems: state => state.categories.map(x => ({
     text: x.name,
-    value: x.id
+    value: x.slug
   })),
   difficultyItems: state => state.difficulties.map(x => ({
     text: x.name,
-    value: x.id
+    value: x.slug
   })),
 }
 
@@ -54,6 +54,11 @@ export const actions = {
    createTrick({commit, dispatch, state}, {form}) {
     console.log("Create Trick: ", form)
       return this.$axios.$post("/api/tricks", form);
+
+  },
+  updateTrick({commit, dispatch, state}, {form}) {
+    console.log("Create Trick: ", form)
+    return this.$axios.$put("/api/tricks", form);
 
   },
   createCategory({commit, dispatch, state}, {form}) {

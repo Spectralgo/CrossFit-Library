@@ -27,6 +27,7 @@ namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing
         private static string TempPrefix => CrossFitLibraryConstants.Files.TempPrefix;
         private string WorkingDirectory => _env.WebRootPath;
         public string GetFFmpegPath() => Path.Combine(_env.ContentRootPath, "ffmpeg", "ffmpeg.exe");
+        
         public string GetFileUrl(string fileName, FileType fileType)
         {
             // This logic is implemented to let the program resolve the environment settings at startup (dev or prod)

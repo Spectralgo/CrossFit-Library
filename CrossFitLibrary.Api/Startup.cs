@@ -40,6 +40,7 @@ public class Startup
 
         services.AddHostedService<VideoEditingBackgroundService>()
             .AddSingleton(_ => Channel.CreateUnbounded<EditVideoChannelMessage>())
+            .AddScoped<VersionMigrationContext>()
             .AddFileManager(_config)
             .AddCors(options =>
                 options.AddPolicy(AllCors, build => build

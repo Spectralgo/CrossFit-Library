@@ -11,12 +11,12 @@
         </v-col>
         <v-col cols="5">
           <v-card>
-            <v-card-title>Approved Reviews {{approvedCount}} / {{reviews.length}})</v-card-title>
+            <v-card-title>Approved Reviews {{approvedCount}} / 3)</v-card-title>
             <v-card-text>
               <div v-if="reviews.length > 0">
                 <div v-for="r in reviews" :key="`review-${r.id}`">
                   <v-icon :color="reviewStatusColor(r.status)">{{reviewStatusIcon(r.status)}}</v-icon>
-                  {{r.reviewComment}}
+                  {{r.comment}}
                 </div>
 
               </div>
@@ -25,7 +25,7 @@
               </div>
               <v-divider class="my-2"></v-divider>
 
-              <v-text-field v-model="reviewComment" label="Review Comment"></v-text-field>
+              <v-text-field v-model="comment" label="Review Comment"></v-text-field>
             </v-card-text>
             <v-card-actions class="justify-center">
               <v-btn v-for="action in reviewActions" :key="`ra-${action.title}`" :color="reviewStatusColor(action.status)"
@@ -84,7 +84,7 @@ export default {
       item: null,
       comments: [],
       reviews: [],
-      reviewComment: "",
+      comment: "",
       parentId: "",
       modId: null,
       type: null,
@@ -95,9 +95,7 @@ export default {
   },
   created() {
 
-    this.trickId = this.$route.params.trickId
     this.modId = this.$route.params.modId
-    this.type = this.$route.params.type // is shoul get the moderation comment from the comment Section componenent
     this.commentsApiUrl = `api/moderation-items/${this.modId}/comments`
     this.reviewApiUrl = `api/moderation-items/${this.modId}/reviews`
 
@@ -114,8 +112,8 @@ export default {
     reviewActions() {
       return [
         {title: "Approve", status: REVIEW_STATUS.APPROVED, disabled: false},
-        {title: "Rejected", status: REVIEW_STATUS.REJECTED, disabled: !this.reviewComment},
-        {title: "Waiting", status: REVIEW_STATUS.WAITING, disabled: !this.reviewComment}
+        {title: "Rejected", status: REVIEW_STATUS.REJECTED, disabled: !this.comment},
+        {title: "Waiting", status: REVIEW_STATUS.WAITING, disabled: !this.comment}
       ]
     },
     approvedCount(){
@@ -135,13 +133,13 @@ export default {
     },
     sendReview(status) {
       const data = {
-        reviewComment: this.reviewComment,
+        comment: this.comment,
         status: status
       }
       this.$axios.$post(this.reviewApiUrl, data)
         .then((review) => this.reviews
           .push(review))
-      this.reviewComment = ""
+      this.comment = ""
     },
     async loadReplies(comment) {
       comment.replies = await this.$axios.$get(`api/comments/${comment.id}/replies`)

@@ -6,7 +6,7 @@ namespace CrossFitLibrary.Models;
 
 public class User : VersionedModel
 {
-    public string Id { get; set; }
+    public new string Id { get; set; } // overriding the int id prop from the VersionModel
     public string Username { get; set; }
     public string ImageUrl { get; set; }
 
