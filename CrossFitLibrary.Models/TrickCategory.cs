@@ -6,7 +6,8 @@ namespace CrossFitLibrary.Models
     {
         public Trick Trick { get; set; }
         public int TrickId { get; set; }
+        
         public Category Category { get; set; }
-        public int CategoryId { get; set; }
+        public string CategoryId { get; set; }
     }
 };

@@ -4,7 +4,7 @@ using CrossFitLibrary.Models.Abstractions;
 
 namespace CrossFitLibrary.Models
 {
-    public class Submission : VersionedModel, ICommentable
+    public class Submission : BaseModel<int>, ICommentable
     {
         public string UserId { get; set; }
         public User User { get; set; }

@@ -16,7 +16,7 @@ namespace CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 public class VideoEditingBackgroundService : BackgroundService
 {
     private readonly ChannelReader<EditVideoChannelMessage> _channelReader;
-    private readonly IFileManager _fileManagerLocal;
+    private readonly IFileManager _fileManager;
     private readonly ILogger<VideoEditingBackgroundService> _logger;
     private readonly IServiceProvider _serviceProvider;
 
@@ -25,11 +25,11 @@ public class VideoEditingBackgroundService : BackgroundService
         Channel<EditVideoChannelMessage> channel,
         ILogger<VideoEditingBackgroundService> logger,
         IServiceProvider serviceProvider,
-        IFileManager fileManagerLocal)
+        IFileManager fileManager)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
-        _fileManagerLocal = fileManagerLocal;
+        _fileManager = fileManager;
         _channelReader = channel.Reader;
     }
 
@@ -43,11 +43,11 @@ public class VideoEditingBackgroundService : BackgroundService
             
             
             var video_info = await _channelReader.ReadAsync(stoppingToken);
-            var input_video_path = _fileManagerLocal.TemporarySavePath(video_info.VideoFileName);
+            var input_video_path = _fileManager.TemporarySavePath(video_info.VideoFileName);
             var output_video_name = CrossFitLibraryConstants.Files.GenerateConvertedVideoFileName();
             var output_thumbnail_name = CrossFitLibraryConstants.Files.GenerateThumbnailFileName(output_video_name);
-            var output_video_path = _fileManagerLocal.TemporarySavePath(output_video_name);
-            var output_thumbnail_path = _fileManagerLocal.TemporarySavePath(output_thumbnail_name);
+            var output_video_path = _fileManager.TemporarySavePath(output_video_name);
+            var output_thumbnail_path = _fileManager.TemporarySavePath(output_thumbnail_name);
             try
             {
                 // The objective is to convert the video in the background to make it smaller
@@ -58,7 +58,7 @@ public class VideoEditingBackgroundService : BackgroundService
                 var startInfo = new ProcessStartInfo
                 {
                     // FileName is the path of the ffmpeg.exe console tool
-                    FileName = _fileManagerLocal.GetFFmpegPath(),
+                    FileName = _fileManager.GetFFmpegPath(),
 
                     // -vn / -an / -sn / -dn options can be used to skip inclusion of video, audio, subtitle and data streams 
                     // We use the -vf argument to specify a simple graph video filter (audio filter would be -af)
@@ -81,12 +81,12 @@ public class VideoEditingBackgroundService : BackgroundService
                     process.WaitForExit();
                 }
 
-                if (!_fileManagerLocal.FileExists(output_video_name))
+                if (!_fileManager.FileExists(output_video_name))
                 {
                     throw new Exception("FFMPEG.exe failed to convert the video.");
                 }
 
-                if (!_fileManagerLocal.FileExists(output_thumbnail_name))
+                if (!_fileManager.FileExists(output_thumbnail_name))
                 {
                     throw new Exception("FFMPEG.exe failed to generate a video thumbnail.");
                 }
@@ -103,8 +103,8 @@ public class VideoEditingBackgroundService : BackgroundService
 
                     submission.Video = new Video
                     {
-                        VideoUrl = _fileManagerLocal.GetFileUrl(output_video_name, FileType.Video),
-                        ThumbnailUrl = _fileManagerLocal.GetFileUrl(output_thumbnail_name, FileType.Image) 
+                        VideoUrl = _fileManager.GetFileUrl(output_video_name, FileType.Video),
+                        ThumbnailUrl = _fileManager.GetFileUrl(output_thumbnail_name, FileType.Image) 
                     };
 
 
@@ -120,13 +120,13 @@ public class VideoEditingBackgroundService : BackgroundService
                 _logger.LogError(e,
                     $"Error while processing video {video_info.VideoFileName}");
 
-                _fileManagerLocal.DeleteFile(video_info.VideoFileName);
-                _fileManagerLocal.DeleteFile(output_thumbnail_name);
+                _fileManager.DeleteFile(video_info.VideoFileName);
+                _fileManager.DeleteFile(output_thumbnail_name);
                 throw;
             }
             finally
             {
-                _fileManagerLocal.DeleteFile(video_info.VideoFileName);
+                _fileManager.DeleteFile(video_info.VideoFileName);
             }
         }
     }

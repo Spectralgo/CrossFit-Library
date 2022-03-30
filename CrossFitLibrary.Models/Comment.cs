@@ -7,7 +7,7 @@ using CrossFitLibrary.Models.Moderation;
 
 namespace CrossFitLibrary.Models
 {
-    public class Comment: VersionedModel
+    public class Comment : BaseModel<int>
     {
         public string Content { get; set; }
         public string HtmlContent { get; set; }

@@ -29,11 +29,11 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet("{id}")]
         public Category Get(string id)
         {
-            return _ctx.Categories.FirstOrDefault(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase));
+            return _ctx.Categories.FirstOrDefault(x => x.Id.Equals(id, StringComparison.InvariantCultureIgnoreCase));
         }
 
         [HttpGet("{id}/tricks")]
-        public IEnumerable<Trick> ListCategoryTricks(int id)
+        public IEnumerable<Trick> ListCategoryTricks(string id)
         {
             var result = _ctx.TrickCategories
                 .Include(x => x.Trick)
@@ -45,7 +45,7 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost]
         public async Task<Category> Create([FromBody] Category category)
         {
-            category.Slug = category.Name.Replace(" ", "-").ToLowerInvariant();
+            category.Id = category.Name.Replace(" ", "-").ToLowerInvariant();
             _ctx.Add(category);
             await _ctx.SaveChangesAsync();
             return category;

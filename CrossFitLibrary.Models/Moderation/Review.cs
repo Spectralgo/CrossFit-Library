@@ -2,7 +2,7 @@
 
 namespace CrossFitLibrary.Models.Moderation
 {
-    public class Review : PersistentModel
+    public class Review : BaseModel<int>
     {
         public int ModerationItemId { get; set; }
         public ModerationItem ModerationItem { get; set; }

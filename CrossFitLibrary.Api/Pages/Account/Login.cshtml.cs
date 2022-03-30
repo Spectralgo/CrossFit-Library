@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CrossFitLibrary.Api.Pages.Account;
 
-public class Login : PageModel
+public class Login : BasePage
 {
     [BindProperty] public LoginForm Form { get; set; }
 
@@ -29,6 +29,8 @@ public class Login : PageModel
         {
             return Redirect(Form.ReturnUrl);
         }
+        
+        CustomErrors.Add("Invalid login attempt, please try again.");
 
         return Page();
     }

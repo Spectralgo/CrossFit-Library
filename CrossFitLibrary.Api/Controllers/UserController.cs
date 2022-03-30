@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CrossFitLibrary.Api.BackgroundServices;
 using CrossFitLibrary.Api.BackgroundServices.VideoEditing;
 using CrossFitLibrary.Api.Settings;
+using CrossFitLibrary.Api.ViewModels;
 using CrossFitLibrary.Data;
 using CrossFitLibrary.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -65,10 +66,13 @@ public class UserController : ApiController
 
 
     [HttpGet("{id}/submissions")]
-    public Task<List<Submission>> GetUserSubmissions(string id)
+    public Task<List<object>> GetUserSubmissions(string id)
     {
-        return _ctx.Submissions.Include(x => x.Video)
+        return _ctx.Submissions
+            .Include(x => x.Video)
+            .Include(x => x.User)
             .Where(x => x.UserId.Equals(id))
+            .Select(SubmissionViewModels.Projection)
             .ToListAsync();
     }
 

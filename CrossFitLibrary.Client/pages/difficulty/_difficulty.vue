@@ -1,10 +1,10 @@
 ﻿<template>
   <ItemContentLayout>
     <template v-slot:content>
-      <TrickList :tricks="tricks" />
+      <TrickList :tricks="tricks"/>
     </template>
     <template v-slot:item>
-      <div v-if="trick">
+      <div v-if="difficulty">
         <div class="text-h6">Difficulty: {{ difficulty.name }}</div>
         <v-divider class="my-1"></v-divider>
         <div class="text-body-2">{{ difficulty.description }}</div>
@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import {mapGetters} from 'vuex';
+import {mapState} from 'vuex';
 import TrickList from '../../components/trick-list';
 import ItemContentLayout from '../../components/item-content-layout'
 
@@ -30,7 +30,7 @@ export default {
     filter: "",
   }),
   computed: {
-    ...mapGetters('tricks', ['difficultyById']),
+    ...mapState('tricks', ['dictionary']),
     filteredTricks() {
       if (!this.filter) return this.tricks;
 
@@ -47,7 +47,8 @@ export default {
   },
   async fetch() {
     const difficultyId = this.$route.params.difficulty;
-    this.difficulty = this.difficultyById(difficultyId);
+    this.difficulty = this.dictionary.difficulties[difficultyId];
+    console.log(difficultyId)
     this.tricks = await this.$axios.$get(`/api/difficulties/${difficultyId}/tricks`);
     console.log('from difficulty fetch', this.tricks);
   },

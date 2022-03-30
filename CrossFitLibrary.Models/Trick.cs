@@ -3,9 +3,10 @@ using CrossFitLibrary.Models.Abstractions;
 
 namespace CrossFitLibrary.Models
 {
-    public class Trick : SlugModel, ICommentable
+    public class Trick : VersionedModel, ICommentable
     {
         public string Name { get; set; }
+        public string Slug { get; set; }
         public string Description { get; set; }
         public string Difficulty { get; set; }
 

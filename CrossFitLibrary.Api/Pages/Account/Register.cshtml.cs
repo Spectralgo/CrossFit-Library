@@ -1,12 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using CrossFitLibrary.Models.Abstractions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CrossFitLibrary.Api.Pages.Account;
 
-public class Register : PageModel
+public class Register : BasePage
 {
     [BindProperty] public RegisterForm Form{ get; set; }
 
@@ -33,6 +34,11 @@ public class Register : PageModel
         {
             await signInManager.SignInAsync(user, true);
             return Redirect(Form.ReturnUrl);
+        }
+
+        foreach (var error in createUserResult.Errors)
+        {
+            CustomErrors.Add(error.Description);
         }
 
         return Page();

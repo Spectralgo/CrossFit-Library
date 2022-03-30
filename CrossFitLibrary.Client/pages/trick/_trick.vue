@@ -2,21 +2,14 @@
   <ItemContentLayout>
     <template v-slot:content>
       <div v-if="submissions">
-        <div v-for="x in 1">
-          <v-card v-for="s in submissions" :key="`${x}-${trick.slug}-${s.id}`" class="my-2" >
-            <VideoPlayer :key="`v-${x}-${trick.slug}-${s.id}`" :video="s.video"/>
-            <v-card-text>
-              {{ s.description }}
-            </v-card-text>
-          </v-card>
-        </div>
+        <Submission v-for="s in submissions" :key="`submission-${s.id}`" :submission="s"/>
       </div>
     </template>
     <template v-slot:item="{close}">
       <div v-if="trick">
         <div class="text-h6">Trick: {{ trick.name }}
           <span class="ml-2">
-          <v-chip :to="`/difficulty/${difficulty.slug}`" small>
+          <v-chip :to="`/difficulty/${difficulty.id}`" small>
             {{ difficulty.name }}
           </v-chip>
         </span>
@@ -35,7 +28,7 @@
       </div>
       <v-divider class="my-1"></v-divider>
       <div>
-        <v-btn @click="edit(); close();" outlined small>edit</v-btn>
+        <v-btn outlined small @click="edit(); close();">edit</v-btn>
       </div>
 
     </template>
@@ -43,15 +36,15 @@
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from 'vuex';
-import VideoPlayer from '../../components/video-player';
+import {mapMutations, mapState} from 'vuex';
 import ItemContentLayout from '../../components/item-content-layout';
 import TrickSteps from "@/components/content-creation/trick-steps";
+import Submission from "@/components/submission";
 
 export default {
   components: {
-    VideoPlayer,
     ItemContentLayout,
+    Submission
   },
   data: () => ({
 
@@ -61,47 +54,46 @@ export default {
   methods: {
     ...mapMutations("video-upload", ["activate"]),
     edit() {
-  this.activate({
-    component: TrickSteps,
-    edit: true,
-    editPayload: this.trick
-  })
+      this.activate({
+        component: TrickSteps,
+        edit: true,
+        editPayload: this.trick
+      })
     }
   },
   computed: {
-    ...mapGetters('tricks', ['trickById', "difficultyById"]),
     ...mapState('submissions', ['submissions']),
-    ...mapState('tricks', ['difficulties','categories', 'tricks']),
+    ...mapState('tricks', ['dictionary']),
     relatedData() {
       return [
         {
           title: "Categories",
-          data: this.categories.filter(x => this.trick.categories.indexOf(x.slug) >= 0),
-          idFactory: c => `category-${c.slug}`,
-          routeFactory: c => `/category/${c.slug}`,
+          data: this.trick.categories.map(x => this.dictionary.categories[x]),
+          idFactory: c => `category-${c.id}`,
+          routeFactory: c => `/category/${c.id}`,
         },
         {
           title: "Prerequisites",
-          data: this.tricks.filter(x => this.trick.prerequisites.indexOf(x.slug) >= 0),
-          idFactory: t => `trick-${t.slug}`,
+          data: this.trick.prerequisites.map(x => this.dictionary.tricks[x]),
+          idFactory: t => `trick-${t.id}`,
           routeFactory: t => `/trick/${t.slug}`,
         },
         {
           title: "Progressions",
-          data: this.tricks.filter(x => this.trick.progressions.indexOf(x.slug) >= 0),
-          idFactory: t => `trick-${t.slug}`,
+          data: this.trick.progressions.map(x => this.dictionary.tricks[x]),
+          idFactory: t => `trick-${t.id}`,
           routeFactory: t => `/trick/${t.slug}`,
         },
       ]
     },
   },
   async fetch() {
-    const trickId = this.$route.params.trick
-    this.trick = this.trickById(this.$route.params.trick)
-    this.difficulty = this.difficultyById(this.trick.difficulty)
-    await this.$store.dispatch("submissions/fetchSubmissionsForTrick", {trickId}, {root: true});
-    console.log("this difficulty:",this.difficulty)
-    console.log("this trick:",this.trick)
+    const trickSlug = this.$route.params.trick
+    this.trick = this.dictionary.tricks[trickSlug]
+    this.difficulty = this.dictionary.difficulties[this.trick.difficulty]
+    await this.$store.dispatch("submissions/fetchSubmissionsForTrick", {trickId: trickSlug}, {root: true});
+    console.log("this difficulty:", this.difficulty)
+    console.log("this trick:", this.trick)
   },
   head() {
     if (!this.trick) return {}

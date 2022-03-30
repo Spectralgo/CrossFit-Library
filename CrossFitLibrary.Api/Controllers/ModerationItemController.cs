@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -34,13 +35,14 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpGet("{id}")]
         public object Get(int id)
         {
-            return _ctx.ModerationItems
+            var query = _ctx.ModerationItems
                 .Include(x => x.Comments)
                 .Include(x => x.Reviews)
                 .Where(x => x.Id.Equals(id))
                 .Select(ModerationItemViewModels.Projection)
                 .FirstOrDefault();
 
+            return query;
         }
 
 
@@ -56,7 +58,6 @@ namespace CrossFitLibrary.Api.Controllers
         [HttpPost("{id}/comments")]
         public async Task<IActionResult> AddComment(int id, [FromBody] Comment comment)
         {
-
             if (!_ctx.ModerationItems.Any(x => x.Id == id))
             {
                 return NoContent();
@@ -72,7 +73,7 @@ namespace CrossFitLibrary.Api.Controllers
                     tag,
                     $"<a href=\"/users/{tag.Substring(1)}\">{tag}</a>");
             }
-            
+
 
             _ctx.Add(comment);
             await _ctx.SaveChangesAsync();
@@ -93,13 +94,12 @@ namespace CrossFitLibrary.Api.Controllers
         public async Task<IActionResult> AddReview(
             int id,
             [FromBody] ReviewForm reviewForm,
-            [FromServices] VersionMigrationContext migrationContext )
+            [FromServices] VersionMigrationContext migrationContext)
         {
-
             var modItem = _ctx.ModerationItems
                 .Include(x => x.Reviews)
                 .FirstOrDefault(x => x.Id == id);
-            
+
             // Be sure the moderationItem exists
             if (modItem == null)
             {
@@ -119,18 +119,26 @@ namespace CrossFitLibrary.Api.Controllers
                 Comment = reviewForm.Comment,
                 Status = reviewForm.Status
             };
-            
+
             _ctx.Add(review); // Same as doing this _ctx.Reviews.Add(review)
 
-            
+
             // TODO: use configuration replace the magic '3'
-            if (modItem.Reviews.Count >= 3)
+            try
             {
-                 migrationContext.Migrate(modItem);
-                 modItem.Deleted = true;
+                if (modItem.Reviews.Count >= 3)
+                {
+                    migrationContext.Migrate(modItem);
+                    modItem.Deleted = true;
+                }
+
+                await _ctx.SaveChangesAsync();
             }
-            
-            await _ctx.SaveChangesAsync();
+            catch (VersionMigrationContext.InvalidVersionException e)
+            {
+                return BadRequest(e.Message);
+            }
+
             return Ok(ReviewViewModel.Create(review));
         }
     }

@@ -1,7 +1,7 @@
 ﻿namespace CrossFitLibrary.Models.Abstractions;
 
-public abstract class PersistentModel
+public abstract class BaseModel<TKey>
 {
-    public int Id { get; set; }
+    public TKey Id { get; set; }
     public bool Deleted { get; set; }
 }

@@ -36,22 +36,41 @@ namespace CrossFitLibrary.Api.Controllers
 
 
         [HttpGet("{id}")]
-        public object Get(string id)
+        public IActionResult Get(string id)
         {
-            //todo: Console.log out the object in the vue app to see the projection
-            return _ctx.Tricks
-                .Where(x => x.Active == true)
-                .Where(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase))
+            var query = _ctx.Tricks.AsQueryable();
+
+            if (int.TryParse(id, out var intId))
+            {
+                query = query.Where(x => x.Id == intId);
+            }
+            else
+            {
+                query = query.Where(x => x.Slug.Equals(id, StringComparison.InvariantCultureIgnoreCase) && x.Active);
+            }
+
+            var trick = query
                 .Select(TrickViewModels.Projection)
                 .FirstOrDefault();
+
+            if (trick is null)
+            {
+                return NoContent();
+            }
+
+            return Ok(trick);
         }
 
         [HttpGet("{trickId}/submissions")]
-        public IEnumerable<Submission> GetSub(string trickId)
+        public IEnumerable<object> GetSub(string trickId)
         {
             var result = _ctx.Submissions
                 .Include(x => x.Video)
-                .Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                .Include(x => x.User)
+                .Where(x => x.TrickId.Equals(trickId, StringComparison.InvariantCultureIgnoreCase))
+                .Select(SubmissionViewModels.Projection)
+                .ToList();
+            
             return result;
         }
 
@@ -74,7 +93,7 @@ namespace CrossFitLibrary.Api.Controllers
 
             _ctx.Add(trick);
             await _ctx.SaveChangesAsync();
-            
+
             _ctx.Add(new ModerationItem
             {
                 Target = trick.Id,
@@ -89,13 +108,13 @@ namespace CrossFitLibrary.Api.Controllers
         {
             var trick = _ctx.Tricks
                 .FirstOrDefault(x => x.Id == trickForm.Id);
-            
-            if (trick == null) 
+
+            if (trick == null)
             {
                 return NoContent();
             }
 
-            var newTrick = new Trick 
+            var newTrick = new Trick
             {
                 Slug = trick.Slug,
                 Name = trick.Name,
@@ -111,14 +130,14 @@ namespace CrossFitLibrary.Api.Controllers
 
             _ctx.Add(newTrick);
             await _ctx.SaveChangesAsync();
-            
+
             _ctx.Add(new ModerationItem
             {
                 Current = trick.Id,
                 Target = newTrick.Id,
                 Type = ModerationItemTypes.Trick
             });
-            
+
             await _ctx.SaveChangesAsync();
 
             return Ok(TrickViewModels.Create(newTrick));

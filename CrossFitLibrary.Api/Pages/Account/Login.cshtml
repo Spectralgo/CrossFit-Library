@@ -21,13 +21,22 @@
         <input asp-for="Form.Password">
         <span asp-validation-for="Form.Password"></span>
     </div>
+    @if (Model.CustomErrors.Count > 0)
+    {
+        <div class="field">
+            @foreach (var error in Model.CustomErrors)
+            {
+                <div class="error">@error</div>
+            }
+        </div>
+    }
     <div class="field flex-col">
         <button type="submit">Log In</button>
-     <hr>
-        <a asp-page="/Account/Register" asp-route-returnUrl="@Model.Form.ReturnUrl"
-        >Register
-            </a>
-        
+        <hr>
+        <a asp-page="/Account/Register" asp-route-returnUrl="@Model.Form.ReturnUrl">
+            Register
+        </a>
+
     </div>
 
 </form>

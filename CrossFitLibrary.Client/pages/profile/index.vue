@@ -1,14 +1,8 @@
 ﻿<template>
   <ItemContentLayout>
     <template v-slot:content>
-      <div v-if="submissions">
-        <v-card v-for="s in submissions" :key="`${s.id}`" class="my-2">
-          <VideoPlayer :key="`v-${s.id}`" :video="s.video"/>
-          <v-card-text>{{ s.description }}</v-card-text>
-        </v-card>
-      </div>
+      <Submission v-for="s in submissions" :key="`submission-${s.id}`" :submission="s"/>
     </template>
-
     <template v-slot:item>
       <div v-if="profile">
         <div>
@@ -36,15 +30,15 @@
 </template>
 
 <script>
-import VideoPlayer from "@/components/video-player";
 import ItemContentLayout from "@/components/item-content-layout";
 import {mapMutations, mapState} from "vuex";
+import Submission from "@/components/submission";
 
 export default {
   components: {
-    VideoPlayer,
-    ItemContentLayout
-  },
+    ItemContentLayout,
+    Submission
+},
   data: () => ({
     submissions: [],
     uploadingImage: false,
@@ -54,6 +48,7 @@ export default {
       const profile = this.$store.state.auth.profile
       console.log('mounted profile', profile)
       this.submissions = await this.$axios.$get(`/api/users/${profile.id}/submissions`)
+      console.log('mounted submissions', this.submissions)
     })
   },
   computed: {

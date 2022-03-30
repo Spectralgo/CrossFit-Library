@@ -37,36 +37,33 @@ public class Program
                     .GetAwaiter()
                     .GetResult();
 
+                ctx.Add(new User
+                {
+                    Id = testUser.Id,
+                    Username = testUser.UserName,
+                    ImageUrl = "https://localhost:5001/api/files/image/user.jpg" 
+                });
                 ctx.Add(new Difficulty
                 {
-                    Id = 1,
-                    Slug = "easy",
+                    Id = "easy",
                     Name = "Easy",
-                    Active = true,
-                    Version = 1,
                     Description = "Super easy to do test"
                 });
                 ctx.Add(new Difficulty
-                    { Id = 2, Slug = "hard", Name = "Hard", Active = true, Version = 1, Description = "Hard Test" });
+                    { Id = "hard", Name = "Hard", Description = "Hard Test" });
 
                 ctx.Add(new Category
-                    { Id = 1, Slug = "gym", Name = "Gym", Active = true, Version = 1, Description = "This Gym Test" });
+                    { Id = "gym", Name = "Gym", Description = "This Gym Test" });
                 ctx.Add(new Category
                 {
-                    Id = 2,
-                    Slug = "weight-lifting",
+                    Id = "weight-lifting",
                     Name = "Weight Lifting",
-                    Active = true,
-                    Version = 1,
                     Description = "This is heavy shit test"
                 });
                 ctx.Add(new Category
                 {
-                    Id = 3,
-                    Slug = "conditioning",
+                    Id = "conditioning",
                     Name = "Conditioning",
-                    Active = true,
-                    Version = 1,
                     Description = "You will suffer test"
                 });
 
@@ -80,7 +77,7 @@ public class Program
                     Description = "Snatch is from the floor to the overhead test",
                     Difficulty = "easy",
                     TrickCategories = new List<TrickCategory>
-                        { new() { CategoryId = 1 }, new() { CategoryId = 2 } }
+                        { new() { CategoryId = "gym" }, new() { CategoryId = "conditioning" } }
                 });
                 ctx.Add(new Trick
                 {
@@ -92,7 +89,7 @@ public class Program
                     Description = "Pull the bar from the floor to your shoulders",
                     Difficulty = "easy",
                     TrickCategories = new List<TrickCategory>
-                        { new() { CategoryId = 2 } }
+                        { new() { CategoryId = "gym" } }
                 });
                 ctx.Add(new Trick
                 {
@@ -104,7 +101,7 @@ public class Program
                     Description = "A clean with a finish overhead",
                     Difficulty = "hard",
                     TrickCategories = new List<TrickCategory>
-                        { new() { CategoryId = 3 }, new() { CategoryId = 2 } },
+                        { new() { CategoryId = "gym" }, new() { CategoryId = "conditioning" } },
                     Prerequisites = new List<TrickRelationship>
                     {
                         new() { PrerequisiteId = 2 }
@@ -115,8 +112,6 @@ public class Program
                 {
                     Id = 1,
                     UserId = testUser.Id,
-                    Active = true,
-                    Version = 1,
                     TrickId = "snatch",
                     Description = "I'm just trying my best",
                     Video = new Video
@@ -130,8 +125,6 @@ public class Program
                 {
                     Id = 2,
                     UserId = testUser.Id,
-                    Active = true,
-                    Version = 1,
                     TrickId = "clean",
                     Description = "best clean of all time",
                     Video = new Video
@@ -144,8 +137,6 @@ public class Program
                 ctx.Add(new ModerationItem
                     {
                         Id = 1,
-                        Active = true,
-                        Version = 1,
                         Target = 1,
                         Type = ModerationItemTypes.Trick
                     }
@@ -153,8 +144,6 @@ public class Program
                 ctx.Add(new Comment
                 {
                     Id = 1,
-                    Active = true,
-                    Version = 1,
                     Content = "This is a comment, I hope it works, I'm just trying to see if it works",
                     HtmlContent = "This is a comment, I hope it works, I'm just trying to see if it works",
                     ModerationItemId = 1,
@@ -163,14 +152,11 @@ public class Program
                 ctx.Add(new Comment
                 {
                     Id = 2,
-                    Active = true,
-                    Version = 1,
                     Content = "A comment related to a trick",
                     HtmlContent = "A comment related to a trick",
                     TrickId = "snatch",
                     DateOfCreation = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")
                 });
-
                 ctx.SaveChanges();
             }
         }

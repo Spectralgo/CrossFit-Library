@@ -4,7 +4,7 @@ using CrossFitLibrary.Models.Abstractions;
 
 namespace CrossFitLibrary.Models.Moderation
 {
-    public class ModerationItem: VersionedModel
+    public class ModerationItem : BaseModel<int>
     {
 
         public int Current { get; set; }
