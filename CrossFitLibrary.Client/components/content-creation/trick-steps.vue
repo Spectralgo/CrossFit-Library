@@ -4,7 +4,7 @@
       <v-card-title>
         Create Trick
         <v-spacer></v-spacer>
-        <v-btn @click="close" icon>
+        <v-btn icon @click="close">
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card-title>
@@ -24,17 +24,35 @@
               <v-text-field v-model="form.name" label="Tricking Name"></v-text-field>
               <v-text-field v-model="form.description" label="Description"></v-text-field>
 
-              <v-select v-model="form.difficulty" :items="difficultyItems" label="Difficulty"
+              <v-select v-model="form.difficulty"
+
+                        :items="lists.difficulties.map(x =>
+                         ({value: x.id, text: x.name}))" label="Difficulty"
+
                         @change="selectDifficulty"></v-select>
 
-              <v-select v-model="form.categories" :items="categoryItems" chips deletable-chips label="Categories"
-                        multiple small-chips @change="selectCategories"></v-select>
+              <v-select v-model="form.categories" chips deletable-chips label="Categories" multiple small-chips
 
-              <v-select v-model="form.prerequisites" :items="trickItems" chips deletable-chips label="Prerequisites"
-                        multiple small-chips @change="selectPrerequisites"></v-select>
+                        :items="lists.categories.map(x =>
+                         ({value: x.id, text: x.name}))"
 
-              <v-select v-model="form.progressions" :items="trickItems" chips deletable-chips label="Progressions"
-                        multiple small-chips @change="selectProgressions"></v-select>
+                        @change="selectCategories"></v-select>
+
+              <v-select v-model="form.prerequisites" chips deletable-chips label="Prerequisites" multiple small-chips
+
+                        :items="lists.tricks
+                        .filter(x => x.id !== form.id || form.id === undefined)
+                        .map(x => ({value: x.id, text: x.name}))"
+
+                        @change="selectPrerequisites"></v-select>
+
+              <v-select v-model="form.progressions" chips deletable-chips label="Progressions" multiple small-chips
+
+                        :items="lists.tricks
+                        .filter(x => x.id !== form.id || form.id === undefined)
+                        .map(x => ({value: x.id, text: x.name}))"
+
+                        @change="selectProgressions"></v-select>
 
               <div class="d-flex justify-center">
                 <v-btn @click="step++">Next</v-btn>
@@ -55,7 +73,7 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
+import {mapActions, mapState} from 'vuex';
 import {close} from "@/components/content-creation/_shared";
 
 export default {
@@ -82,13 +100,13 @@ export default {
   },
   computed: {
     ...mapState('video-upload', ["editing", "editPayload"]),
-    ...mapGetters('tricks', ['trickItems', 'categoryItems', 'difficultyItems']),
+    ...mapState('tricks', ['lists']),
   },
   methods: {
     ...mapActions('tricks', ['createTrick', 'updateTrick']),
     async save() {
       if (this.editing) {
-        await this.updateTrick({ form: this.form});
+        await this.updateTrick({form: this.form});
       } else {
         await this.createTrick({form: this.form});
       }

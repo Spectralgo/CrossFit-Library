@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using CrossFitLibrary.Models.Abstractions;
 using CrossFitLibrary.Models.Moderation;
 
@@ -30,19 +28,18 @@ public class VersionMigrationContext
 
         if (current != null)
         {
-
             if (target.Version - current.Version <= 0)
             {
                 throw new InvalidVersionException(
                     $"Current version is {current.Version}, Target version is {target.Version} for {modItem.Type}.");
             }
-            
+
             current.Active = false;
 
             // Grabbing all open moderation items and bump the target version accordingly
             // We just added a new version so we want to point next updates to this new id number
-            List<ModerationItem> outdatedModerationItems = _ctx.ModerationItems
-                .Where(x => !x.Deleted  && x.Type == modItem.Type && x.Id != modItem.Id)
+            var outdatedModerationItems = _ctx.ModerationItems
+                .Where(x => !x.Deleted && x.Type == modItem.Type && x.Id != modItem.Id)
                 .ToList();
 
             foreach (var item in outdatedModerationItems)
@@ -52,7 +49,7 @@ public class VersionMigrationContext
         }
 
         target.Active = true;
-
+        MigrateRelationships(modItem.Current, modItem.Target, modItem.Type);
     }
 
 
@@ -66,6 +63,30 @@ public class VersionMigrationContext
         throw new ArgumentException(nameof(type));
     }
 
+    private void MigrateRelationships(int current, int target, string type)
+    {
+        if (type == ModerationItemTypes.Trick)
+        {
+            if (current > 0)
+            {
+                _ctx.TrickRelationships
+                    .Where(x => 
+                        x.PrerequisiteId == current || x.ProgressionId == current)
+                    .ToList()
+                    .ForEach(x => x.Active = false);
+            }
+
+            _ctx.TrickRelationships
+                .Where(x => 
+                    x.PrerequisiteId == target || x.ProgressionId == target)
+                .ToList()
+                .ForEach(x => x.Active = true);
+        }
+        else
+        {
+            throw new ArgumentException(nameof(type));
+        }
+    }
 
     public class InvalidVersionException : Exception
     {

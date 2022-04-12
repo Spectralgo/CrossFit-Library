@@ -7,5 +7,6 @@
         
         public Trick Progression { get; set; }
         public int ProgressionId { get; set; }
+        public bool Active { get; set; }
     }
 }

@@ -15,9 +15,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CrossFitLibrary.Api.Controllers
 {
-    [ApiController]
     [Route("api/tricks")]
-    public class TricksController : ControllerBase
+    public class TricksController : ApiController
     {
         private readonly AppDbContext _ctx;
 
@@ -30,8 +29,13 @@ namespace CrossFitLibrary.Api.Controllers
         public IEnumerable<object> All()
         {
             return _ctx.Tricks
+                .AsNoTracking()
                 .Where(x => x.Active == true)
-                .Select(TrickViewModels.Projection).ToList();
+                .Include(x => x.TrickCategories)
+                .Include(x => x.Prerequisites)
+                .Include(x => x.Progressions)
+                .Include(x => x.User)
+                .Select(TrickViewModels.ProjectionWithUser).ToList();
         }
 
 
@@ -50,7 +54,11 @@ namespace CrossFitLibrary.Api.Controllers
             }
 
             var trick = query
-                .Select(TrickViewModels.Projection)
+                .Include(x => x.TrickCategories)
+                .Include(x => x.Prerequisites)
+                .Include(x => x.Progressions)
+                .Include(x => x.User)
+                .Select(TrickViewModels.FullProjection)
                 .FirstOrDefault();
 
             if (trick is null)
@@ -75,6 +83,7 @@ namespace CrossFitLibrary.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = CrossFitLibraryConstants.Policies.User)]
         public async Task<object> Create([FromBody] TrickForm trickForm)
         {
             var trick = new Trick
@@ -89,6 +98,8 @@ namespace CrossFitLibrary.Api.Controllers
                 Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x })
                     .ToList(),
                 Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
+                UserId = UserId,
+                
             };
 
             _ctx.Add(trick);
@@ -104,6 +115,8 @@ namespace CrossFitLibrary.Api.Controllers
             return TrickViewModels.Create(trick);
         }
 
+        [HttpPut]
+        [Authorize(Policy = CrossFitLibraryConstants.Policies.User)]
         public async Task<IActionResult> Update([FromBody] TrickForm trickForm)
         {
             var trick = _ctx.Tricks
@@ -125,6 +138,7 @@ namespace CrossFitLibrary.Api.Controllers
                 Prerequisites = trickForm.Prerequisites.Select(x => new TrickRelationship { PrerequisiteId = x })
                     .ToList(),
                 Progressions = trickForm.Progressions.Select(x => new TrickRelationship { ProgressionId = x }).ToList(),
+                UserId = UserId,
             };
 
 

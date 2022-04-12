@@ -70,6 +70,7 @@ public class Program
                 ctx.Add(new Trick
                 {
                     Id = 1,
+                    UserId = testUser.Id,
                     Slug = "snatch",
                     Name = "Snatch",
                     Active = true,
@@ -82,6 +83,7 @@ public class Program
                 ctx.Add(new Trick
                 {
                     Id = 2,
+                    UserId = testUser.Id,
                     Slug = "clean",
                     Name = "Clean",
                     Active = true,
@@ -94,6 +96,7 @@ public class Program
                 ctx.Add(new Trick
                 {
                     Id = 3,
+                    UserId = testUser.Id,
                     Slug = "clean-and-jerk",
                     Name = "Clean and jerk",
                     Active = true,
@@ -104,7 +107,7 @@ public class Program
                         { new() { CategoryId = "gym" }, new() { CategoryId = "conditioning" } },
                     Prerequisites = new List<TrickRelationship>
                     {
-                        new() { PrerequisiteId = 2 }
+                        new() { PrerequisiteId = 2 , Active = true},
                     }
                 });
 
@@ -131,6 +134,19 @@ public class Program
                     {
                         VideoUrl = "https://localhost:5001/api/files/video/two.mp4",
                         ThumbnailUrl = "https://localhost:5001/api/files/image/two.jpg"
+                    },
+                    VideoProcessed = true
+                });
+                ctx.Add(new Submission
+                {
+                    Id = 3,
+                    UserId = testUser.Id,
+                    TrickId = "snatch",
+                    Description = "I'm just trying my best",
+                    Video = new Video
+                    {
+                        VideoUrl = "https://localhost:5001/api/files/video/one.mp4",
+                        ThumbnailUrl = "https://localhost:5001/api/files/image/one.jpg"
                     },
                     VideoProcessed = true
                 });

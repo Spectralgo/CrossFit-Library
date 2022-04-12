@@ -9,4 +9,6 @@ public abstract class VersionedModel : BaseModel<int>
     
     // TimeStamp on activation (date of validation)
     public DateTime TimeStamp { get; set; }
+    public string UserId  { get; set; }
+    public User User  { get; set; }
 }

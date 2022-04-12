@@ -1,7 +1,7 @@
 <template>
   <v-app dark>
     <div>
-      <v-app-bar app dense>
+      <v-app-bar app dense >
 
         <v-toolbar-title>
           <nuxt-link class="text-h5 text--primary" style="text-decoration: none" to="/">Woder</nuxt-link>
@@ -10,19 +10,17 @@
         <v-spacer></v-spacer>
         <v-btn class="mx-1" v-if="moderator" depressed to="/moderation">Moderation</v-btn>
 
-        <v-skeleton-loader class="mx-1" :loading="loading"  type="button">
-          <ContentCreationDialog/>
-        </v-skeleton-loader>
-
-        <v-skeleton-loader class="mx-1" :loading="loading"  type="button">
-          <div class="text-center">
-            <v-menu offset-y v-if="authenticated">
+        <IfAuth>
+          <template v-slot:allowed >
+            <div class="flex d-flex align-center">
+            <ContentCreationDialog/>
+            <v-menu offset-y >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn icon v-bind="attrs" v-on="on">
-                  <v-avatar v-if="profile.imageUrl" size="36">
-                    <img :src="`${profile.imageUrl}`" alt="profile image"/>
+                  <v-avatar  size="36">
+                    <img v-if="profile.imageUrl" :src="`${profile.imageUrl}`" alt="profile image"/>
+                    <v-icon v-else >mdi-account-circle</v-icon>
                   </v-avatar>
-                  <v-icon v-else >mdi-account-circle</v-icon>
                 </v-btn>
               </template>
               <v-list>
@@ -34,10 +32,15 @@
                 </v-list-item>
               </v-list>
             </v-menu>
-          <v-btn depressed outlined v-else @click="login">
-            <v-icon left>mdi-account-circle-outline</v-icon>Log in</v-btn>
-          </div>
-        </v-skeleton-loader>
+            </div>
+          </template>
+          <template v-slot:forbidden="{login}">
+              <v-btn depressed outlined  @click="login">
+                <v-icon left>mdi-account-circle-outline</v-icon>
+                Log in
+              </v-btn>
+          </template>
+        </IfAuth>
 
       </v-app-bar>
     </div>
@@ -53,14 +56,14 @@
 <script>
 import ContentCreationDialog from "../components/content-creation/content-creation-dialog";
 import {mapActions, mapGetters, mapState} from "vuex";
+import IfAuth from "@/components/auth/if-auth";
 
 export default {
-  components: {ContentCreationDialog},
+  components: {IfAuth, ContentCreationDialog},
   computed: {
-    ...mapState('auth', ['loading', 'profile']),
-    ...mapGetters('auth', ['authenticated', 'moderator']),
+    ...mapState('auth', [ 'profile']),
+    ...mapGetters('auth', [ 'moderator']),
   },
-  methods: mapActions('auth', ['login'])
 
 }
 </script>

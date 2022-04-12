@@ -35,7 +35,7 @@
 
         <v-stepper-content  step="2">
           <div>
-            <v-select :items="trickItems" label="Select Trick" @change="selectTrick"></v-select>
+            <v-select v-model="form.trickId" :items="lists.tricks.map(x => ({value: x.slug, text: x.name}))" label="Select Trick" @change="selectTrick"></v-select>
 
             <div class="d-flex justify-center">
             <v-btn @click="step++">Next</v-btn>
@@ -70,23 +70,25 @@
 </template>
 
 <script>
-import {mapActions, mapGetters, mapMutations} from 'vuex';
-import {close} from "@/components/content-creation/_shared";
+import {mapActions, mapMutations, mapState} from 'vuex';
+import {close, form} from "@/components/content-creation/_shared";
 
 
 export default {
   name: "submission-steps",
-  mixins: [close],
-  data: () => ({
-    step: 1,
-    form: {
+  mixins: [
+    close,
+    form( () => ({
       video: "",
       trickId: "",
       description: "",
-    },
+    }))
+  ],
+  data: () => ({
+    step: 1,
   }),
   computed: {
-    ...mapGetters('tricks', ['trickItems']),
+    ...mapState('tricks', ['lists']),
   },
   methods: {
     ...mapMutations('video-upload', ['hide']),
